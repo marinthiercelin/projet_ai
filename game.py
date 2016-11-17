@@ -4,5 +4,5 @@ class game(object):
 		self.players = 0
 		self.deck = 0
 		self.on_table = 0
-	
+		self
 	def one_turn(self):

@@ -1,8 +1,9 @@
 #player class
 class player(object):
-	def __init__(self):
-		self.chips = 0
+	def __init__(self,number,chips):
+		self.chips = chips
+		self.number = number
 		
-	def get_hand(self, cards):
+	def new_hand(self, cards):
 		
 	def play(self):
