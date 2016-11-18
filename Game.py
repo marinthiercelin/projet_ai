@@ -34,8 +34,7 @@ class Game(object):
 			self.players[i].take_cards(self.deck.get(2))
 			self.deck.burn()
 
-
-	def one_round(self):
+	def play_round(self):
 		for i in range(self.num_players):
 			self.pot += self.players[i].decide # To be implemented (Maybe store each action and send to other players)
 
@@ -52,6 +51,9 @@ class Game(object):
 			self.deck.burn()
 			self.stage = Stage.turn if self.stage is Stage.flop else Stage.river
 
-
 	def decide_winner(self):
-		
+		hands = []
+		for i in range(self.num_players):
+			hands.append(self.players[i].get_hand())
+
+		winner = hand_comparator.best_hand(hands)
