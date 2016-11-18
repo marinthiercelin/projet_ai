@@ -24,18 +24,18 @@ class Game(object):
 		self.stage = Stage.preflop
 
 	def collect_blinds(self):
-		for i in range(self.num_players):
+		for i in xrange(self.num_players):
 			self.pot += 0  # self.players[i].collect_blind() #Needs to be implemented
 
 	def deal(self):
 		self.deck.restart()
 
-		for i in range(self.num_players):
+		for i in xrange(self.num_players):
 			self.players[i].take_cards(self.deck.get(2))
 			self.deck.burn()
 
 	def play_round(self):
-		for i in range(self.num_players):
+		for i in xrange(self.num_players):
 			self.pot += self.players[i].decide # To be implemented (Maybe store each action and send to other players)
 
 		if self.stage is Stage.river: #River has been played, time to decide who won the game
@@ -53,7 +53,7 @@ class Game(object):
 
 	def decide_winner(self):
 		hands = []
-		for i in range(self.num_players):
+		for i in xrange(self.num_players):
 			hands.append(self.players[i].get_hand())
 
 		winner = hand_comparator.best_hand(hands)

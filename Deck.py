@@ -2,7 +2,7 @@ import itertools
 import random
 
 
-values = ["Ace", "2", "3", "4", '5'," 6","7","8","9","10","Jack","Queen","King"]
+values = range(1, 14)
 suits = ["Spades", "Diamonds", "Hearts", "Clubs"]
 
 
