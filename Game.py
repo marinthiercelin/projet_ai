@@ -29,14 +29,22 @@ class Game(object):
 
 	def deal(self):
 		self.deck.restart()
-
 		for i in xrange(self.num_players):
 			self.players[i].take_cards(self.deck.get(2))
-			self.deck.burn()
+
+	#Collects bets and sends previous bets to current player
+	def collect_bets(self):
+		previous_bets = []
+		for i in xrange(self.num_players):
+			bet = self.players[i].get_bet(previous_bets)
+			previous_bets.append(bet)
+
+		for bet in previous_bets:
+			self.pot += bet
 
 	def play_round(self):
-		for i in xrange(self.num_players):
-			self.pot += self.players[i].decide # To be implemented (Maybe store each action and send to other players)
+
+		self.collect_bets()
 
 		if self.stage is Stage.river: #River has been played, time to decide who won the game
 			self.stage = Stage.showdown
@@ -50,6 +58,7 @@ class Game(object):
 			self.opened_cards += self.deck.get()
 			self.deck.burn()
 			self.stage = Stage.turn if self.stage is Stage.flop else Stage.river
+
 
 	def decide_winner(self):
 		hands = []
