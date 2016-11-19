@@ -1,6 +1,5 @@
 from enum import Enum
 import Deck
-
 class Hand(Enum):
     high_card = 1
     pair = 2
@@ -17,19 +16,52 @@ deck_suits = Deck.suits
 
 class HandComparator(object):
 
+    #Returns the hand which the cards represent
     def get_hand(self, cards):
-        unzipped = zip(*cards)
-        ranks = unzipped[0]
-        suits = unzipped[1]
         dup = self.is_duplicate(cards)
         flush = self.is_flush(cards)
-        straight = self.is_straight(ranks)
+        straight = self.is_straight(cards)
+
+        if flush[0]: #Royal_Flush, Straight_flush, Flush
+            return flush[1], flush[2]
+        elif straight[0]: #Straight
+            return Hand.straight, straight[1]
+        elif dup[0]: #Pair, two
+            return dup[1], dup[2]
+        else:
+            sorted_cards = sorted(cards, key=lambda x: x[0], reverse=True)
+            if sorted_cards[-1][0] == 1:
+                sorted_cards = [sorted_cards[-1]] + sorted_cards[0:min(len(sorted_cards), 4)]
+            else:
+                sorted_cards = sorted_cards[0:5]
+
+            return Hand.high_card, sorted_cards
 
 
 
 
+    #This function classifies the flush (flush, Straight Flush and royal flush)
+    #Problems are when to differentiate when an ace is a 1 or an ace
+    def classify_flush(self, flush_cards, flush_suit):
+        consecutive_cards = [flush_cards[0]]
+        for card in flush_cards[1:]:
+            if card[0] == consecutive_cards[-1][0] - 1:
+                consecutive_cards.append(card)
+            else:
+                if len(consecutive_cards) < 4:
+                    consecutive_cards = [card]
 
+        if consecutive_cards[0] == (13, flush_suit) and (1, flush_suit) in flush_cards:  # Royal flush
+            return Hand.royal_flush, [(1, flush_suit)] + consecutive_cards[0:4]
+        elif len(consecutive_cards) >= 5:  # Straight flush
+            return Hand.straight_flush, consecutive_cards[0:5]
+        else:  # Flush
+            return Hand.flush, flush_cards[0:5]
+
+    #Return (True, type, cards) if the current hand contains a duplicate hand (pair, two pair, 3 of a kind, 4 of a kind, full House)
+    #Cards is reverse sorted (Highest pair before)
     def is_duplicate(self, cards):
+        #Returns a list and each element is a list of duplicates
         def get_duplicates(c):
             tmp = dict()
             for card in c:
@@ -45,7 +77,9 @@ class HandComparator(object):
 
             return duplicates.values()
 
-        duplicates = get_duplicates(cards) #Alwas sorted from lowest card to highest
+        duplicates = sorted(get_duplicates(cards), key=lambda x:x[0][0]) #Alwas sorted from lowest card to highest
+        #print duplicates
+
         #Case where there a no duplicates
         if len(duplicates) == 0:
             return False, None, None
@@ -63,6 +97,11 @@ class HandComparator(object):
         #Case where there are two groups of duplicates
         elif len(duplicates) == 2:
             low, high = duplicates[0], duplicates[1]
+
+            if low[0][0] == 1: #Handles case of Aces
+                tmp = high
+                high = low
+                low = tmp
 
             if len(high) + len(low) > 5: #Handles 4 of a kinds, or double three of a kind (Very improbable)
                 if len(high) == 3 and len(low) == 3:
@@ -82,6 +121,12 @@ class HandComparator(object):
         #Case where there are 3 duplicates (Improbable)
         else:
             low, med, high = duplicates[0], duplicates[1], duplicates[2]
+
+            if low[0][0] == 1: #Handles case of Aces
+                tmp = high
+                high = low
+                low = tmp
+
             if len(low) + len(med) + len(high) == 6: #Case where there are 3 pairs
                 return True, Hand.two_pair, high + med
             else: #Case where there is 1 three of a kind and 2 pairs => Full-House
@@ -92,28 +137,44 @@ class HandComparator(object):
                 else:
                     return True, Hand.full_house, high + med
 
-    #Returns (True, Suit, cards) if the current hand contains a flush in the given suit and (False, None, None) else
+    #Returns (True, type,  cards) if the current hand contains a flush in the given suit and (False, None, None) else
+    #Cards is reverse sorted (High to low)
     def is_flush(self, cards):
         flush_cards = []
+
+        #Groups cards in suits
         for suit in deck_suits:
             tmp = [card for card in cards if card[1] == suit]
-            if len(cards) >= 5:
-                flush_cards = sorted(tmp, key=lambda x: x[0], reverse=True)[0:5]
+            if len(tmp) >= 5:
+                flush_cards = sorted(tmp, key=lambda x: x[0], reverse=True)
                 break
+
 
         if not flush_cards: #Equivalent to flush_cards == []
             return False, None, None
         else:
-            return True, flush_cards[0][1], flush_cards
+            flush_suit = flush_cards[0][1]
+            type = self.classify_flush(flush_cards, flush_suit)
+
+            return True, type[0], type[1]
+
 
     #Returns (True, card_ranks) if the current hand contains a straight up to the given rank
-    def is_straight(self, ranks):
+    #card_ranks is reverse sorted (High to low)
+    def is_straight(self, cards):
+        #print cards
+        cards_by_rank = dict(cards)
+        ranks = cards_by_rank.keys()
+
         ordered_set_ranks = sorted(list(set(ranks)), reverse=True)
         if len(ordered_set_ranks) < 5:
             return False, None
         else:
             consecutive_cards = [ordered_set_ranks[0]]
             for i in xrange(1, len(ordered_set_ranks)):
+
+                if consecutive_cards == [13, 12, 11, 10] and 1 in ordered_set_ranks: #Handles straight to Ace
+                    return True, [1] + consecutive_cards
 
                 if ordered_set_ranks[i] == (consecutive_cards[-1] - 1):
                     consecutive_cards.append(ordered_set_ranks[i])
@@ -122,12 +183,18 @@ class HandComparator(object):
                         consecutive_cards = [ordered_set_ranks[i]]
 
             if len(consecutive_cards) >= 5:
-                return True, consecutive_cards[0:5]
+                return True, [(rank, cards_by_rank[rank]) for rank in consecutive_cards[0:5]]
             else:
                 return False, None
 
 
-d = HandComparator()
-e = [(13,"Spades"), (1, "clubs"), (2,"Hearts"), (2, "Spades"), (5,"Diamonds"), (13, "Spades"), (1,"Hearts")]
-print d.is_duplicate(e)
+'''d = HandComparator()
+deck = Deck.Deck()
+
+for i in range(0,10):
+    e = deck.get(7)
+    deck.restart()
+    print e
+    print d.get_hand(e)
+    print '\n'''''
 
