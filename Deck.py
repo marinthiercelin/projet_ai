@@ -4,18 +4,17 @@ import json
 
 values = range(1, 14)
 suits = ["Spades", "Diamonds", "Hearts", "Clubs"]
-
+ordered_list = list(itertools.product(values, suits))
 
 #a deck of card
 class Deck(object):
 
     def __init__(self):
-        self.ordered_list = list(itertools.product(values, suits))
         self.deck = []
         self.restart()
 
     def restart(self):
-        self.deck = list(self.ordered_list)
+        self.deck = list(ordered_list)
         random.shuffle(self.deck)
 
     def get(self, number=1):
@@ -37,7 +36,7 @@ class FakeDeck(Deck):
 	def restart(self):
 		self.index_of_deck += 1
 		if self.index_of_deck >= len(self.list_of_decks):
-			new = list(self.ordered_list)
+			new = list(ordered_list)
 			random.shuffle(new)
 			self.list_of_decks.append(new)
 		self.deck = self.list_of_decks[self.index_of_deck]
