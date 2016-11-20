@@ -1,6 +1,6 @@
 import itertools
 import random
-
+import json
 
 values = range(1, 14)
 suits = ["Spades", "Diamonds", "Hearts", "Clubs"]
@@ -28,4 +28,41 @@ class Deck(object):
         for n in xrange(number):
             self.deck.pop()
 
+class FakeDeck(Deck):
+	def __init__(self):
+		self.list_of_decks = []
+		self.index_of_deck = -1 # current_deck
+		Deck.__init__(self)
+		
+	def restart(self):
+		self.index_of_deck += 1
+		if self.index_of_deck >= len(self.list_of_decks):
+			new = list(self.ordered_list)
+			random.shuffle(new)
+			self.list_of_decks.append(new)
+		self.deck = self.list_of_decks[self.index_of_deck]
+	
+	def restart_fake(self):
+		self.index_of_deck = -1
+		self.restart()
+		
+	def store(self,name):
+		f = open(name,"w")
+		json.dump(self.list_of_decks,f)
+		f.close()
+		
+	def load(self,name):
+		f = open(name)
+		self.list_of_decks = json.load(f)
+		f.close()
+		new = []
+		for deck in self.list_of_decks:
+			new_d = []
+			for card in deck:
+				new_d.append((card[0],card[1]))
+			new.append(new_d)
+		self.list_of_decks = list(new)
+		
+		
+		
 
