@@ -64,30 +64,33 @@ class Game(object):
 		if action1 is action.fold: #Small blind folded, end of round
 			print self.small_blind.name+" folds\n"
 			self.small_blind.folded = True
+			small_blind_bet = self.small_blind.collect_bet()
+			dealer_bet = self.dealer.collect_bet()
+			self.pot += small_blind_bet + dealer_bet
 			return False
 			
 		#We don't care if small blind calls or checks at this point, and if he raises, he adds it to his current bet
-		if  action1 is action.call: #Makes the small blind cover the next half of blind
+		elif action1 is action.call: #Makes the small blind cover the next half of blind
 			if self.stage is Stage.preflop :
 				print "Completed small blind \n"
 				self.small_blind.place_bet(self.blind/2.0)
 			else :
 				print self.small_blind.name +" checks\n"
 		
-		if action1 is action.bet:
+		elif action1 is action.bet:
 			print self.small_blind.name + " raises\n"
 			self.small_blind.place_bet(self.bet_value)
-				
-			
-		
-		
+
 		action2 = self.dealer.play()#then dealer plays, he can raise if small blind didnt raise ! correction : can raise anyway
 		if action2 is action.fold: #dealer folded
 			print self.dealer.name +" folds\n"
 			self.dealer.folded = True
+			small_blind_bet = self.small_blind.collect_bet()
+			dealer_bet = self.dealer.collect_bet()
+			self.pot += small_blind_bet + dealer_bet
 			return False
 		
-		if action2 is action.call:
+		elif action2 is action.call:
 			if action1 is action.call:
 				print self.dealer.name +" checks\n"
 			else:
@@ -105,14 +108,15 @@ class Game(object):
 
 			action3 = self.small_blind.play(False)#if dealer raised, small blind either calls or fold
 			if action3 == action.fold:
-				print self.small_blind.name+" folds\n"
+				print self.small_blind.name + " folds\n"
 				self.small_blind.folded = True
+				small_blind_bet = self.small_blind.collect_bet()
+				dealer_bet = self.dealer.collect_bet()
+				self.pot += small_blind_bet + dealer_bet
 				return False
 			else:
 				print self.small_blind.name +" calls\n"
 				self.small_blind.place_bet(self.bet_value)
-				
-			#If small blind didn't fold, then he called
 
 		small_blind_bet = self.small_blind.collect_bet()
 		dealer_bet = self.dealer.collect_bet()
