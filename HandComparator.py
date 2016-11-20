@@ -41,10 +41,13 @@ class HandComparator(object):
                 ranks1, ranks2 = zip(*cards1)[0], zip(*cards2)[0] #Get the ranks of each hand
                 diff = sorted(list(set(ranks1).symmetric_difference(set(ranks2))), reverse=True)
 
-                max_card = diff[0]
-                if diff[-1] == 1:
+                if len(diff) == 0:
+                    return None
+
+                elif diff[-1] == 1:
                     return hand1 if diff[-1] in ranks1 else hand2
                 else:
+                    max_card = diff[0]
                     return hand1 if max_card in ranks1 else hand2
 
 
@@ -209,6 +212,7 @@ class HandComparator(object):
         #print cards
         if len(cards) < 5:
             return False, None
+
         cards_by_rank = dict(cards)
         ranks = cards_by_rank.keys()
 
