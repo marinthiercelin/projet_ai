@@ -30,24 +30,26 @@ class Game(object):
 
 	#Instructs players to put blind bets in their current bet
 	def collect_blinds(self):
-		self.small_blind.place_bet(self.blind/2)
+		self.small_blind.place_bet(self.blind/2.0)
 		self.dealer.place_bet(self.blind)
-		self.pot += (3/2.0) * self.blind #Add sum to the pot
+		#self.pot += (3/2.0) * self.blind #Add sum to the pot
 
 	#Shuffles the deck and gives two cards to each player
 	def deal(self):
 		self.deck.restart()
-		self.small_blind.new_hand(self.deck.get(2))
-		self.dealer.new_hand(self.deck.get(2))
+		self.small_blind.collect_cards(self.deck.get(2))
+		self.dealer.collect_cards(self.deck.get(2))
 	
 	def start_game(self):
 		while self.dealer.chips != 0 and self.small_blind.chips != 0: #Play until no player has money
+			self.small_blind.new_hand()
+			self.dealer.new_hand()
 			print "Collecting blinds \n"
 			self.collect_blinds()
 			self.deal()
 
 			while not self.play_round():
-				print "Proceeding to ", self.stage
+				print "\n Proceeding to ", self.stage.name , "\n"
 
 			self.end_of_round()#to implement
 		
@@ -60,7 +62,7 @@ class Game(object):
 			return False
 		#We don't care if small blind calls or checks at this point, and if he raises, he adds it to his current bet
 		if self.stage is Stage.preflop and action1 is action.call: #Makes the small blind cover the next half of blind
-			print "Completed small blind \n"
+			print "\n Completed small blind \n"
 			self.small_blind.place_bet(self.blind/2.0)
 		#self.small_blind.collect_money(abs(self.small_blind.on_table - self.dealer.on_table))#call
 		#elif action1 == action.bet:#then raise
@@ -93,6 +95,7 @@ class Game(object):
 	def play_round(self):
 
 		print "\n pot is ", self.pot, "\n"
+
 		if not self.collect_bets():
 			return True  #one of the player has folded
 
@@ -130,16 +133,18 @@ class Game(object):
 			small_blind_hand = comparator.get_hand(self.small_blind.show_cards() + self.community_cards) #Hand of small blind
 			dealer_hand = comparator.get_hand(self.dealer.show_cards() + self.community_cards) #Hand of big blind
 
-			if small_blind_hand[0].value == dealer_hand[0].value: #Same hand, to be implemented
-				print "same hand"
+			winner = comparator.compare_hands(small_blind_hand, dealer_hand)
+			if winner == small_blind_hand:
+				self.small_blind.win_money(self.pot)  # dealer wins
+				print "\n Small blind won ", self.pot, " chips with ", winner[0].name
 
-			elif small_blind_hand[0].value > dealer_hand[0].value: # small blind wins
-				self.small_blind.win_money(self.pot) # dealer wins
-				print "Small blind won"
-
-			else:
-				print "Dealer won"
+			elif winner == dealer_hand:
 				self.dealer.win_money(self.pot)
+				print "\n Dealer won ", self.pot, " chips with ", winner[0].name
+			else:
+				self.small_blind.win_money(self.pot/2.0)
+				self.dealer.win_money(self.pot/2.0)
+				print "\n Pot split, same hand"
 
 		self.pot = 0
 		self.stage = Stage.preflop

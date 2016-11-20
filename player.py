@@ -20,11 +20,15 @@ class player(object):
 		self.community_cards = []
 
 	#Reinitializes the hand to play next round
-	def new_hand(self, cards):
+	def new_hand(self):
 		self.folded = False
 		self.current_bet = 0
-		self.cards = cards
+		self.cards = []
 		self.community_cards = []
+
+	#Collects the cards
+	def collect_cards(self, cards):
+		self.cards = cards
 
 	#Updates the community cards when changed
 	def update_cards(self, community_cards):
@@ -53,9 +57,10 @@ class player(object):
 	#def oponent_action(self, action):
 			
 	def play(self, bet_value, can_raise=True):
+		print "\n Your statement is ", self.chips
 		print "Your cards are ", self.cards
 		print "Community cards are ", self.community_cards
-		print "You currently have a ", comparator.get_hand(self.cards + self.community_cards)
+		print "You currently have a ", comparator.get_hand(self.cards + self.community_cards)[0].name
 
 		if can_raise:
 			string = "What do you do ? : 1 = bet, 2 = fold, 3 = call/check \n"

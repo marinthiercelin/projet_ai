@@ -16,7 +16,39 @@ deck_suits = Deck.suits
 
 class HandComparator(object):
 
-    #Returns the hand which the cards represent
+    #Compares two given hands and returns the winning Hand or None if they are equal
+    def compare_hands(self, hand1, hand2):
+        if hand1 == hand2:
+            return None
+
+        if hand1[0].value > hand2[0].value:
+            return hand1
+        elif hand1[0].value < hand2[0].value:
+            return hand2
+        else: #Same hands, got to compare the cards
+            cards1, cards2 = hand1[1], hand2[1]
+            if cards1[0][0] > cards2[0][0]: #Compare first elements
+                if cards2[0][0] != 1:
+                    return hand1 #hand1 wins
+                else:
+                    return hand2 #hand2 wins
+            elif cards1[0][0] < cards2[0][0]:
+                if cards1[0][0] != 1: #Handles case of Ace
+                    return hand2
+                else:
+                    return hand1
+            else:
+                ranks1, ranks2 = zip(*cards1)[0], zip(*cards2)[0] #Get the ranks of each hand
+                diff = sorted(list(set(ranks1).symmetric_difference(set(ranks2))), reverse=True)
+
+                max_card = diff[0]
+                if diff[-1] == 1:
+                    return hand1 if diff[-1] in ranks1 else hand2
+                else:
+                    return hand1 if max_card in ranks1 else hand2
+
+
+    #Returns the hand which the cards represent (type, cards) generally, cards always has 5 cards
     def get_hand(self, cards):
         dup = self.is_duplicate(cards)
         flush = self.is_flush(cards)
@@ -27,17 +59,27 @@ class HandComparator(object):
         elif straight[0]: #Straight
             return Hand.straight, straight[1]
         elif dup[0]: #Pair, two
-            return dup[1], dup[2]
+            complete_hand = self.complete_duplicate_hand(cards, dup[2])
+            return dup[1], complete_hand
         else:
             sorted_cards = sorted(cards, key=lambda x: x[0], reverse=True)
             if sorted_cards[-1][0] == 1:
-                sorted_cards = [sorted_cards[-1]] + sorted_cards[0:min(len(sorted_cards), 4)]
+                sorted_cards = [sorted_cards[-1]] + sorted_cards[0:min(len(sorted_cards)-1, 4)]
             else:
                 sorted_cards = sorted_cards[0:5]
 
             return Hand.high_card, sorted_cards
 
-
+    #Completes pairs, two_pairs, three_of_a_kind, four_of_a_kind to a hand of 5 cards (size of hand)
+    def complete_duplicate_hand(self, cards, duplicate):
+        if len(duplicate) == 5 or len(cards) < 5: #Case of a full house
+            return duplicate
+        else:
+            missing = 5 - len(duplicate)
+            rest = sorted([card for card in cards if card not in duplicate], key=lambda x:x[0], reverse=True) # reverse sort of cards not involved in hand
+            if rest[-1][0] == 1: #Takes care of aces
+                rest = rest[-1:] + rest[0:-1]
+            return duplicate + rest[0: missing]
 
 
     #This function classifies the flush (flush, Straight Flush and royal flush)
@@ -77,7 +119,7 @@ class HandComparator(object):
 
             return duplicates.values()
 
-        duplicates = sorted(get_duplicates(cards), key=lambda x:x[0][0]) #Alwas sorted from lowest card to highest
+        duplicates = sorted(get_duplicates(cards), key=lambda x: x[0][0]) #Alwas sorted from lowest card to highest
         #print duplicates
 
         #Case where there a no duplicates
@@ -141,6 +183,8 @@ class HandComparator(object):
     #Cards is reverse sorted (High to low)
     def is_flush(self, cards):
         flush_cards = []
+        if len(cards) < 5:
+            return False, None, None
 
         #Groups cards in suits
         for suit in deck_suits:
@@ -159,10 +203,12 @@ class HandComparator(object):
             return True, type[0], type[1]
 
 
-    #Returns (True, card_ranks) if the current hand contains a straight up to the given rank
+    #Returns (True, straight) if the current hand contains a straight up to the given rank
     #card_ranks is reverse sorted (High to low)
     def is_straight(self, cards):
         #print cards
+        if len(cards) < 5:
+            return False, None
         cards_by_rank = dict(cards)
         ranks = cards_by_rank.keys()
 
