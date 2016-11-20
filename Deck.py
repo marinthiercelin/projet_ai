@@ -59,7 +59,7 @@ class FakeDeck(Deck):
 		for deck in self.list_of_decks:
 			new_d = []
 			for card in deck:
-				new_d.append((card[0],card[1]))
+				new_d.append((card[0],str(card[1])))
 			new.append(new_d)
 		self.list_of_decks = list(new)
 		
