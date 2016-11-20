@@ -87,6 +87,8 @@ class Game(object):
 
 			print self.small_blind.name + " raises\n"
 			small_blind_raise = self.small_blind.place_bet(self.bet_value, self.dealer.chips)
+		else:
+			print "Error : " + str(action1)
 
 		action2 = self.dealer.play()#then dealer plays, he can raise if small blind didnt raise ! correction : can raise anyway
 
@@ -128,6 +130,8 @@ class Game(object):
 			else:
 				print self.small_blind.name +" calls\n"
 				self.small_blind.place_bet(dealer_raise)
+		else:
+			print "Error : " + str(action2)
 
 		small_blind_bet = self.small_blind.collect_bet()
 		dealer_bet = self.dealer.collect_bet()
@@ -189,11 +193,11 @@ class Game(object):
 			winner = comparator.compare_hands(small_blind_hand, dealer_hand)
 			if winner == small_blind_hand:
 				self.small_blind.win_money(self.pot)  # small_blind wins
-				print self.small_blind.name +" won ", self.pot, " chips with ", winner[0].name +"\n"
+				print self.small_blind.name +" won ", self.pot, " chips with ", winner[0].name , winner[1] , '\n'
 
 			elif winner == dealer_hand:
 				self.dealer.win_money(self.pot)
-				print self.dealer.name +" won ", self.pot, " chips with ", winner[0].name + "\n"
+				print self.dealer.name +" won ", self.pot, " chips with ", winner[0].name , winner[1] , '\n'
 			else:
 				self.small_blind.win_money(self.pot/2.0)
 				self.dealer.win_money(self.pot/2.0)
