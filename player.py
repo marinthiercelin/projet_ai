@@ -11,9 +11,9 @@ comparator = HandComparator.HandComparator()
 #player class
 class player(object):
 
-	def __init__(self, number, chips):
+	def __init__(self, name, chips):
 		self.chips = chips
-		self.number = number
+		self.name = name
 		self.cards = []
 		self.current_bet = 0 #Represents the bet for the current stage, bets are only collected before proceding to next stage
 		self.folded = False
@@ -38,8 +38,8 @@ class player(object):
 	#Called to collect a blind or a bet
 	def place_bet(self, amount):
 		val = max(0, self.chips-amount)
+		self.current_bet += self.chips-val
 		self.chips = val
-		self.current_bet += amount
 
 	#Returns the current bet to the game and resets it to 0, usually when proceding to next stage
 	def collect_bet(self):
@@ -56,11 +56,12 @@ class player(object):
 	
 	#def oponent_action(self, action):
 			
-	def play(self, bet_value, can_raise=True):
-		print "\n Your statement is ", self.chips
-		print "Your cards are ", self.cards
-		print "Community cards are ", self.community_cards
-		print "You currently have a ", comparator.get_hand(self.cards + self.community_cards)[0].name
+	def play(self, can_raise=True):
+		print "Player : " + self.name
+		print "Your statement is " , self.chips
+		print "Your cards are " + self.card_string(self.cards)
+		print "Community cards are " + self.card_string(self.community_cards)
+		print "You currently have a ", comparator.get_hand(self.cards + self.community_cards)[0].name 
 
 		if can_raise:
 			string = "What do you do ? : 1 = bet, 2 = fold, 3 = call/check \n"
@@ -68,15 +69,31 @@ class player(object):
 			string = "Opponent raised. What do you do ? : 2 = fold, 3 = call\n"
 		move = raw_input(string)
 
-		if move == "1":
-			self.place_bet(bet_value)
+		if move == "1" and can_raise:
 			return action.bet
 		elif move == "2" :
-			self.folded = True
 			return action.fold
 		elif move == "3":
-			if not can_raise: #If opponent raised, it's a call
-				self.place_bet(bet_value)
 			return action.call
 		else:
-			return self.play(bet_value)
+			return self.play(bet_value,can_raise)
+		
+		print #retour a la ligne du bled
+			
+	def card_string(self,cards):
+		string = ""
+		for card in cards :
+			string += "\n| "
+			if card[0] is 1:
+				string += "Ace"
+			elif card[0] is 11:
+				string += "Jack"
+			elif card[0] is 12:
+				string += "Queen"
+			elif card[0] is 13:
+				string += "King"
+			else :
+				string += str(card[0])
+			string += " of " + card[1] + " |"
+		return "No cards" if string == "" else string
+			

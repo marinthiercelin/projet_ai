@@ -42,48 +42,78 @@ class Game(object):
 	
 	def start_game(self):
 		while self.dealer.chips != 0 and self.small_blind.chips != 0: #Play until no player has money
+			print "########################################\n"
+			print self.dealer.name + " is the dealer\n"
 			self.small_blind.new_hand()
 			self.dealer.new_hand()
-			print "Collecting blinds \n"
+			print "Collecting blinds\n"
 			self.collect_blinds()
 			self.deal()
 
 			while not self.play_round():
-				print "\n Proceeding to ", self.stage.name , "\n"
+				print"----------------------------------\n"
+				print "Proceeding to ", self.stage.name , "\n"
 
 			self.end_of_round()#to implement
 		
 
 	#Collects bets and sends previous bets to current player
 	def collect_bets(self):
-		action1 = self.small_blind.play(self.bet_value)# small blind plays
+		action1 = self.small_blind.play()# small blind plays
 
-		if action1 == action.fold: #Small blind folded, end of round
+		if action1 is action.fold: #Small blind folded, end of round
+			print self.small_blind.name+" folds\n"
+			self.small_blind.folded = True
 			return False
+			
 		#We don't care if small blind calls or checks at this point, and if he raises, he adds it to his current bet
-		if self.stage is Stage.preflop and action1 is action.call: #Makes the small blind cover the next half of blind
-			print "\n Completed small blind \n"
-			self.small_blind.place_bet(self.blind/2.0)
-		#self.small_blind.collect_money(abs(self.small_blind.on_table - self.dealer.on_table))#call
-		#elif action1 == action.bet:#then raise
-			#self.small_blind.collect_money(self.bet_value)
+		if  action1 is action.call: #Makes the small blind cover the next half of blind
+			if self.stage is Stage.preflop :
+				print "Completed small blind \n"
+				self.small_blind.place_bet(self.blind/2.0)
+			else :
+				print self.small_blind.name +" checks\n"
 		
-		action2 = self.dealer.play(self.bet_value, action1 != action.bet)#then dealer plays, he can raise if small blind didnt raise
-		if action2 == action.fold: #Player 2 folded
+		if action1 is action.bet:
+			print self.small_blind.name + " raises\n"
+			self.small_blind.place_bet(self.bet_value)
+				
+			
+		
+		
+		action2 = self.dealer.play()#then dealer plays, he can raise if small blind didnt raise ! correction : can raise anyway
+		if action2 is action.fold: #dealer folded
+			print self.dealer.name +" folds\n"
+			self.dealer.folded = True
 			return False
+		
+		if action2 is action.call:
+			if action1 is action.call:
+				print self.dealer.name +" checks\n"
+			else:
+				print self.dealer.name +" calls\n"
+				self.dealer.place_bet(self.bet_value)
 
 		#Here the dealer can re-raise, and thus we need the to pass the information to the small blind
-		#elif action2 == action.call: #Player 2 checked or called the raise
-		#self.dealer.collect_money(abs(self.small_blind.on_table - self.dealer.on_table))#call
 		if action2 == action.bet:
-			#self.dealer.collect_money(self.bet_value)
+			if action1 is action.call:
+				print self.dealer.name +" raises\n"
+				self.dealer.place_bet(self.bet_value)
+			else :
+				print self.dealer.name +" calls and raises again\n"
+				self.dealer.place_bet(2*self.bet_value)
 
-			action1 = self.small_blind.play(self.bet_value, False)#if dealer raised, small blind either calls or fold
-			if action1 == action.fold:
+			action3 = self.small_blind.play(False)#if dealer raised, small blind either calls or fold
+			if action3 == action.fold:
+				print self.small_blind.name+" folds\n"
+				self.small_blind.folded = True
 				return False
+			else:
+				print self.small_blind.name +" calls\n"
+				self.small_blind.place_bet(self.bet_value)
+				
 			#If small blind didn't fold, then he called
 
-			#self.small_blind.collect_money(abs(self.small_blind.on_table - self.dealer.on_table))#call
 		small_blind_bet = self.small_blind.collect_bet()
 		dealer_bet = self.dealer.collect_bet()
 
@@ -94,7 +124,7 @@ class Game(object):
 	#Plays one round until the end or until one player folds
 	def play_round(self):
 
-		print "\n pot is ", self.pot, "\n"
+		print "pot is ", self.pot, "\n"
 
 		if not self.collect_bets():
 			return True  #one of the player has folded
@@ -122,11 +152,11 @@ class Game(object):
 
 	def end_of_round(self):
 		if self.small_blind.folded:
-			print "Dealer won"
+			print self.dealer.name + " won\n"
 			self.dealer.win_money(self.pot)
 
 		elif self.dealer.folded:
-			print "Small blind won"
+			print self.small_blind.name + " won\n"
 			self.small_blind.win_money(self.pot)
 
 		else:
@@ -135,16 +165,16 @@ class Game(object):
 
 			winner = comparator.compare_hands(small_blind_hand, dealer_hand)
 			if winner == small_blind_hand:
-				self.small_blind.win_money(self.pot)  # dealer wins
-				print "\n Small blind won ", self.pot, " chips with ", winner[0].name
+				self.small_blind.win_money(self.pot)  # small_blind wins
+				print self.small_blind.name +" won ", self.pot, " chips with ", winner[0].name +"\n"
 
 			elif winner == dealer_hand:
 				self.dealer.win_money(self.pot)
-				print "\n Dealer won ", self.pot, " chips with ", winner[0].name
+				print self.dealer.name +" ", self.pot, " chips with ", winner[0].name + "\n"
 			else:
 				self.small_blind.win_money(self.pot/2.0)
 				self.dealer.win_money(self.pot/2.0)
-				print "\n Pot split, same hand"
+				print "Pot split, same hand\n"
 
 		self.pot = 0
 		self.stage = Stage.preflop
