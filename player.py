@@ -76,7 +76,7 @@ class player(object):
 		elif move == "3":
 			return action.call
 		else:
-			return self.play(bet_value,can_raise)
+			return self.play(can_raise)
 		
 		print #retour a la ligne du bled
 			
