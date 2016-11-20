@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="20558de6-19c0-4ba8-9af7-08798b05aeb1" name="Default" comment="Started the hand Comparator">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Game.py" afterPath="$PROJECT_DIR$/Game.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/player.py" afterPath="$PROJECT_DIR$/player.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HandComparator.py" afterPath="$PROJECT_DIR$/HandComparator.py" />
     </list>
     <ignored path="projet_ai.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -24,10 +22,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
-      <file leaf-file-name="Game.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Game.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Game.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="649">
+            <state relative-caret-position="3727">
               <caret line="195" column="45" selection-start-line="195" selection-start-column="45" selection-end-line="195" selection-end-column="45" />
               <folding>
                 <element signature="e#13#34#0" expanded="true" />
@@ -51,7 +49,7 @@
       <file leaf-file-name="player.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/player.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-105">
+            <state relative-caret-position="96">
               <caret line="38" column="56" selection-start-line="38" selection-start-column="56" selection-end-line="38" selection-end-column="56" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
@@ -72,19 +70,17 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HandComparator.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="HandComparator.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/HandComparator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="486">
-              <caret line="19" column="42" selection-start-line="19" selection-start-column="42" selection-end-line="19" selection-end-column="42" />
+            <state relative-caret-position="594">
+              <caret line="49" column="38" selection-start-line="49" selection-start-column="38" selection-end-line="49" selection-end-column="38" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
-                <element signature="e#434#1568#0" expanded="false" />
-                <element signature="e#1701#2482#0" expanded="false" />
-                <element signature="e#2644#3100#0" expanded="false" />
-                <element signature="e#3308#3980#0" expanded="false" />
-                <element signature="e#4203#7206#0" expanded="false" />
-                <element signature="e#7402#8007#0" expanded="false" />
+                <element signature="e#1775#2556#0" expanded="false" />
+                <element signature="e#2718#3174#0" expanded="false" />
+                <element signature="e#3382#4054#0" expanded="false" />
+                <element signature="e#7476#8081#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -109,9 +105,9 @@
         <option value="$PROJECT_DIR$/game.py" />
         <option value="$PROJECT_DIR$/Deck.py" />
         <option value="$PROJECT_DIR$/Tester.py" />
-        <option value="$PROJECT_DIR$/HandComparator.py" />
         <option value="$PROJECT_DIR$/player.py" />
         <option value="$PROJECT_DIR$/Game.py" />
+        <option value="$PROJECT_DIR$/HandComparator.py" />
       </list>
     </option>
   </component>
@@ -485,12 +481,10 @@
           <caret line="19" column="42" selection-start-line="19" selection-start-column="42" selection-end-line="19" selection-end-column="42" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
-            <element signature="e#434#1568#0" expanded="false" />
-            <element signature="e#1701#2482#0" expanded="false" />
-            <element signature="e#2644#3100#0" expanded="false" />
-            <element signature="e#3308#3980#0" expanded="false" />
-            <element signature="e#4203#7206#0" expanded="false" />
-            <element signature="e#7402#8007#0" expanded="false" />
+            <element signature="e#1775#2556#0" expanded="false" />
+            <element signature="e#2718#3174#0" expanded="false" />
+            <element signature="e#3382#4054#0" expanded="false" />
+            <element signature="e#7476#8081#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -511,12 +505,10 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
-            <element signature="e#434#1568#0" expanded="false" />
-            <element signature="e#1701#2482#0" expanded="false" />
-            <element signature="e#2644#3100#0" expanded="false" />
-            <element signature="e#3308#3980#0" expanded="false" />
-            <element signature="e#4203#7206#0" expanded="false" />
-            <element signature="e#7402#8007#0" expanded="false" />
+            <element signature="e#1775#2556#0" expanded="false" />
+            <element signature="e#2718#3174#0" expanded="false" />
+            <element signature="e#3382#4054#0" expanded="false" />
+            <element signature="e#7476#8081#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -555,36 +547,10 @@
     <entry file="file://$PROJECT_DIR$/game.py" />
     <entry file="file://$PROJECT_DIR$/game.py" />
     <entry file="file://$PROJECT_DIR$/deck.py" />
-    <entry file="file://$PROJECT_DIR$/HandComparator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="486">
-          <caret line="19" column="42" selection-start-line="19" selection-start-column="42" selection-end-line="19" selection-end-column="42" />
-          <folding>
-            <element signature="e#0#21#0" expanded="true" />
-            <element signature="e#434#1568#0" expanded="false" />
-            <element signature="e#1701#2482#0" expanded="false" />
-            <element signature="e#2644#3100#0" expanded="false" />
-            <element signature="e#3308#3980#0" expanded="false" />
-            <element signature="e#4203#7206#0" expanded="false" />
-            <element signature="e#7402#8007#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Tester.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="216">
           <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#21#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/player.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-105">
-          <caret line="38" column="56" selection-start-line="38" selection-start-column="56" selection-end-line="38" selection-end-column="56" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
           </folding>
@@ -603,10 +569,34 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Game.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="649">
+        <state relative-caret-position="3727">
           <caret line="195" column="45" selection-start-line="195" selection-start-column="45" selection-end-line="195" selection-end-column="45" />
           <folding>
             <element signature="e#13#34#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/player.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="96">
+          <caret line="38" column="56" selection-start-line="38" selection-start-column="56" selection-end-line="38" selection-end-column="56" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HandComparator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="594">
+          <caret line="49" column="38" selection-start-line="49" selection-start-column="38" selection-end-line="49" selection-end-column="38" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+            <element signature="e#1775#2556#0" expanded="false" />
+            <element signature="e#2718#3174#0" expanded="false" />
+            <element signature="e#3382#4054#0" expanded="false" />
+            <element signature="e#7476#8081#0" expanded="false" />
           </folding>
         </state>
       </provider>
