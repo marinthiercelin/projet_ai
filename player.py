@@ -36,10 +36,11 @@ class player(object):
 
 	#Instructs the player to put the required amount on his bet
 	#Called to collect a blind or a bet
-	def place_bet(self, amount):
-		val = max(0, self.chips-amount)
-		self.current_bet += self.chips-val
-		self.chips = val
+	def place_bet(self, amount, opponent_chips=100000000):
+		val = min(amount, opponent_chips, self.chips)
+		self.current_bet += val
+		self.chips -= val
+		return val
 
 	#Returns the current bet to the game and resets it to 0, usually when proceding to next stage
 	def collect_bet(self):
