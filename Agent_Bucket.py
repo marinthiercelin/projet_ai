@@ -7,9 +7,8 @@ class Agent_Bucket(player):
 		player.__init__(self,name,chips)
 		self.classifier = Bucketing()
 	
-	def play(self,can_raise = True):
+	def play(self,check_or_call,can_raise = True):
 		bucket = self.classifier.bucketing(self.cards, self.community_cards)
-		print bucket
 		proba = [0,0,0]
 		if bucket == 0:
 			proba = [1,1,0]
@@ -25,8 +24,5 @@ class Agent_Bucket(player):
 		s = sum(proba)
 		if s != 0 :
 			proba = [a / (s*1.0) for a in proba]
-		print proba , sum(proba)
-			
 		act = random.choice([action.fold,action.call,action.bet],1,p=proba)
-		print "agent acts : " + str(act)
 		return act[0]

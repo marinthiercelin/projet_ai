@@ -56,13 +56,20 @@ class Game(object):
 
 			self.end_of_round()#to implement
 		
+		winner = None
+		if self.dealer.chips == 0:
+			winner = self.small_blind
+		else:
+			winner = self.dealer
+		print "-----> Winner : " + winner.name + " jackpot : " + str(winner.chips)
+		
 
 	#Collects bets and sends previous bets to current player
 	def collect_bets(self):
-		if self.small_blind.chips == 0 or self.dealer.chips == 0: #Have to end the game
+		if (self.small_blind.chips == 0 or self.dealer.chips == 0 ) and  (not self.stage is Stage.preflop): #Have to end the game
 			return False
 
-		action1 = self.small_blind.play()# small blind plays
+		action1 = self.small_blind.play("complete blind" if self.stage is Stage.preflop else "check")# small blind plays
 
 		if action1 is action.fold: #Small blind folded, end of round
 			print self.small_blind.name+" folds\n"
@@ -90,7 +97,7 @@ class Game(object):
 		else:
 			print "Error : " + str(action1)
 
-		action2 = self.dealer.play()#then dealer plays, he can raise if small blind didnt raise ! correction : can raise anyway
+		action2 = self.dealer.play("check" if action1 is action.call else "call")#then dealer plays, he can raise if small blind didnt raise ! correction : can raise anyway
 
 		if action2 is action.fold: #dealer folded
 			print self.dealer.name +" folds\n"
@@ -118,7 +125,7 @@ class Game(object):
 				self.dealer.place_bet(small_blind_raise) #Call
 				dealer_raise = self.dealer.place_bet(self.bet_value, self.small_blind.chips) #raise
 
-			action3 = self.small_blind.play(False)#if dealer raised, small blind either calls or fold
+			action3 = self.small_blind.play("call",False)#if dealer raised, small blind either calls or fold
 			if action3 == action.fold:
 				print self.small_blind.name + " folds\n"
 				self.small_blind.folded = True
@@ -173,6 +180,12 @@ class Game(object):
 		return False  # turn is not over
 
 	def end_of_round(self):
+		print "End of round : "
+		print self.small_blind.name + " had : " +  self.small_blind.card_string(self.small_blind.cards)
+		print self.dealer.name + " had : " +  self.dealer.card_string(self.dealer.cards)
+		print "Table was : " +  self.small_blind.card_string(self.community_cards)
+		
+		
 		if self.small_blind.folded:
 			print self.dealer.name , " won ", self.pot, " chips \n"
 			self.dealer.win_money(self.pot)
