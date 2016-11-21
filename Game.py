@@ -180,11 +180,6 @@ class Game(object):
 		return False  # turn is not over
 
 	def end_of_round(self):
-		print "End of round : "
-		print self.small_blind.name + " had : " +  self.small_blind.card_string(self.small_blind.cards)
-		print self.dealer.name + " had : " +  self.dealer.card_string(self.dealer.cards)
-		print "Table was : " +  self.small_blind.card_string(self.community_cards)
-		
 		
 		if self.small_blind.folded:
 			print self.dealer.name , " won ", self.pot, " chips \n"
@@ -216,6 +211,11 @@ class Game(object):
 				self.dealer.win_money(self.pot/2.0)
 				print "Pot split, same hand\n"
 
+		print "End of round : "
+		print self.small_blind.name + " had : " +  self.small_blind.card_string(self.small_blind.cards)
+		print self.dealer.name + " had : " +  self.dealer.card_string(self.dealer.cards)
+		print "Table was : " +  self.small_blind.card_string(self.community_cards)
+		
 		self.pot = 0
 		self.stage = Stage.preflop
 		swap = self.dealer
