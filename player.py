@@ -57,7 +57,7 @@ class player(object):
 	
 	#def oponent_action(self, action):
 			
-	def play(self, can_raise=True):
+	def play(self, check_or_call,can_raise=True):
 		print "Player : " + self.name
 		print "Your statement is " , self.chips
 		print "Your cards are " + self.card_string(self.cards)
@@ -65,9 +65,9 @@ class player(object):
 		print "You currently have a ", comparator.get_hand(self.cards + self.community_cards)[0].name 
 
 		if can_raise:
-			string = "What do you do ? : 1 = bet, 2 = fold, 3 = call/check \n"
+			string = "What do you do ? : 1 = bet, 2 = fold, 3 = "+check_or_call+"\n"
 		else:
-			string = "Opponent raised. What do you do ? : 2 = fold, 3 = call\n"
+			string = "Opponent raised. What do you do ? : 2 = fold, 3 = "+check_or_call+"\n"
 		move = raw_input(string)
 
 		if move == "1" and can_raise:
