@@ -20,9 +20,13 @@ class Agent_Bucket(player):
 			proba = [1,25,24]  if can_raise else [1,49,0]
 		elif bucket == 4:
 			proba = [0,2,3]  if can_raise else [0,1,0] 
+		else : 
+			proba = [0,0,1] if can_raise else [0,1,0]
 				
 		s = sum(proba)
 		if s != 0 :
 			proba = [a / (s*1.0) for a in proba]
+		print sum(proba)
+		print bucket
 		act = random.choice([action.fold,action.call,action.bet],1,p=proba)
 		return act[0]

@@ -243,8 +243,10 @@ deck = Deck.Deck()
 
 for i in range(0,10):
     e = deck.get(7)
+    f = deck.get(7)
     deck.restart()
     print e
-    print d.get_hand(e)
-    print '\n'''''
+    print f
+    print d.compare_hands(e, f)
+    print '\n''''
 
