@@ -224,7 +224,7 @@ class HandComparator(object):
             for i in xrange(1, len(ordered_set_ranks)):
 
                 if consecutive_cards == [13, 12, 11, 10] and 1 in ordered_set_ranks: #Handles straight to Ace
-                    return True, [1] + consecutive_cards
+                    return True, [(1, cards_by_rank[1])] + [(rank, cards_by_rank[rank]) for rank in consecutive_cards[0:4]]
 
                 if ordered_set_ranks[i] == (consecutive_cards[-1] - 1):
                     consecutive_cards.append(ordered_set_ranks[i])
@@ -238,10 +238,13 @@ class HandComparator(object):
                 return False, None
 
 
-'''d = HandComparator()
+d = HandComparator()
 deck = Deck.Deck()
 
-for i in range(0,10):
+cards = [(1,"Spades"), (13,"Clubs"),(12,"Spades"),(11,"Hearts"),(10,"Clubs")]
+
+print d.get_hand(cards)
+'''for i in range(0,10):
     e = deck.get(7)
     f = deck.get(7)
     deck.restart()
