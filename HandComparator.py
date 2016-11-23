@@ -238,13 +238,13 @@ class HandComparator(object):
                 return False, None
 
 
-d = HandComparator()
+'''d = HandComparator()
 deck = Deck.Deck()
 
 cards = [(1,"Spades"), (13,"Clubs"),(12,"Spades"),(11,"Hearts"),(10,"Clubs")]
 
 print d.get_hand(cards)
-'''for i in range(0,10):
+for i in range(0,10):
     e = deck.get(7)
     f = deck.get(7)
     deck.restart()
