@@ -13,14 +13,14 @@ def compare_agents(agent1,agent2,number_of_games,chips,blind,bet,file_name):
 		deck = FakeDeck()
 		game = Game(agent1,agent2,blind,bet,deck)
 		stat = game.start_game()
-		string = "Aller " + stat[0] + " " + str(stat[1]) + " "+ stat[2] + " " +  str(stat[3]) + " draw " + str(stat[4]) + "\n"
+		string = "Aller " + stat[0] + " " + str(stat[1]) + " "+ stat[2] + " " +  str(stat[3]) + " draw " + str(stat[4]) + " winner " + stat[5]+"\n"
 		f.write(string)
 		agent1.new_game(chips)
 		agent2.new_game(chips)
 		deck.restart_fake()
 		game = Game(agent2,agent1,blind,bet,deck)
 		stat = game.start_game()
-		string = "Retour " + stat[0] + " " + str(stat[1]) + " "+ stat[2] + " " +  str(stat[3]) + " draw " + str(stat[4]) + "\n"
+		string = "Retour " + stat[0] + " " + str(stat[1]) + " "+ stat[2] + " " +  str(stat[3]) + " draw " + str(stat[4]) + " winner " + stat[5] + "\n"
 		f.write(string)
 	f.close()
 

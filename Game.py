@@ -76,7 +76,7 @@ class Game(object):
 		else:
 			winner = self.dealer
 		print "-----> Winner : " + winner.name + " jackpot : " + str(winner.chips)
-		return (name1,counter1,name2,counter2,counterD)
+		return (name1,counter1,name2,counter2,counterD,winner.name)
 		
 
 	#Collects bets and sends previous bets to current player
