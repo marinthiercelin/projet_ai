@@ -65,9 +65,9 @@ class Game(object):
 			winner_name = self.end_of_round()
 			if winner_name is name1 :
 				counter1 += 1
-			elif  winner_name is name2 :
+			elif winner_name is name2:
 				counter2 += 1
-			else :
+			else:
 				counterD += 1
 		
 		winner = None
