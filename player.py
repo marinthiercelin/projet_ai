@@ -18,6 +18,14 @@ class player(object):
 		self.current_bet = 0 #Represents the bet for the current stage, bets are only collected before proceding to next stage
 		self.folded = False
 		self.community_cards = []
+		
+	def new_game(self,chips):
+		self.chips = chips
+		self.cards = []
+		self.current_bet = 0 #Represents the bet for the current stage, bets are only collected before proceding to next stage
+		self.folded = False
+		self.community_cards = []
+		
 
 	#Reinitializes the hand to play next round
 	def new_hand(self):
@@ -57,12 +65,14 @@ class player(object):
 	
 	#def oponent_action(self, action):
 			
-	def play(self, check_or_call,can_raise=True):
+	def play(self, can_check = False,can_raise=True):
 		print "Player : " + self.name
 		print "Your statement is " , self.chips
 		print "Your cards are " + self.card_string(self.cards)
 		print "Community cards are " + self.card_string(self.community_cards)
 		print "You currently have a ", comparator.get_hand(self.cards + self.community_cards)[0].name 
+		
+		check_or_call = "check" if can_check else "call"
 
 		if can_raise:
 			string = "What do you do ? : 1 = bet, 2 = fold, 3 = "+check_or_call+"\n"

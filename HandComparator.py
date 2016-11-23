@@ -248,5 +248,5 @@ for i in range(0,10):
     print e
     print f
     print d.compare_hands(e, f)
-    print '\n''''
+    print '\n'''
 

@@ -7,7 +7,7 @@ class Agent_Bucket(player):
 		player.__init__(self,name,chips)
 		self.classifier = Bucketing()
 	
-	def play(self,check_or_call,can_raise = True):
+	def play(self,can_check = False,can_raise = True):
 		bucket = self.classifier.bucketing(self.cards, self.community_cards)
 		proba = [0,0,0]
 		if bucket == 0:

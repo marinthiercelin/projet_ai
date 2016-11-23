@@ -18,12 +18,15 @@ comparator = HandComparator.HandComparator()
 class Game(object):
 	# Init takes an array of players and the number of players set to 1
 	# Blinds are the first chips to play the game
-	def __init__(self, player1, player2, blind, bet_value):
+	def __init__(self, player1, player2, blind, bet_value, deck = None):
 		self.bet_value = bet_value
 		self.dealer = player1  #Second to play
 		self.small_blind = player2  #First to play
 		self.community_cards = []
-		self.deck = Deck()
+		if deck is None :
+			self.deck = Deck()
+		else :
+			self.deck = deck
 		self.blind = blind
 		self.pot = 0 #Sum of all bets for the game
 		self.stage = Stage.preflop
@@ -41,6 +44,11 @@ class Game(object):
 		self.dealer.collect_cards(self.deck.get(2))
 	
 	def start_game(self):
+		name1 = self.dealer.name
+		name2 = self.small_blind.name
+		counter1 = 0 # number of round won by player1
+		counter2 = 0 # number of round won by player2
+		counterD = 0 # number of draw
 		while self.dealer.chips != 0 and self.small_blind.chips != 0: #Play until no player has money
 			print "########################################\n"
 			print self.dealer.name + " is the dealer\n"
@@ -54,7 +62,13 @@ class Game(object):
 				print"----------------------------------\n"
 				print "Proceeding to ", self.stage.name , "\n"
 
-			self.end_of_round()#to implement
+			winner_name = self.end_of_round()
+			if winner_name is name1 :
+				counter1 += 1
+			elif  winner_name is name2 :
+				counter2 += 1
+			else :
+				counterD += 1
 		
 		winner = None
 		if self.dealer.chips == 0:
@@ -62,6 +76,7 @@ class Game(object):
 		else:
 			winner = self.dealer
 		print "-----> Winner : " + winner.name + " jackpot : " + str(winner.chips)
+		return (name1,counter1,name2,counter2,counterD)
 		
 
 	#Collects bets and sends previous bets to current player
@@ -69,7 +84,7 @@ class Game(object):
 		if (self.small_blind.chips == 0 or self.dealer.chips == 0 ) and  (not self.stage is Stage.preflop): #Have to end the game
 			return False
 
-		action1 = self.small_blind.play("complete blind" if self.stage is Stage.preflop else "check")# small blind plays
+		action1 = self.small_blind.play(can_check = self.stage is Stage.preflop)# small blind plays
 
 		if action1 is action.fold: #Small blind folded, end of round
 			print self.small_blind.name+" folds\n"
@@ -97,7 +112,7 @@ class Game(object):
 		else:
 			print "Error : " + str(action1)
 
-		action2 = self.dealer.play("check" if action1 is action.call else "call")#then dealer plays, he can raise if small blind didnt raise ! correction : can raise anyway
+		action2 = self.dealer.play(can_check = action1 is action.call)#then dealer plays, he can raise if small blind didnt raise ! correction : can raise anyway
 
 		if action2 is action.fold: #dealer folded
 			print self.dealer.name +" folds\n"
@@ -125,7 +140,7 @@ class Game(object):
 				self.dealer.place_bet(small_blind_raise) #Call
 				dealer_raise = self.dealer.place_bet(self.bet_value, self.small_blind.chips) #raise
 
-			action3 = self.small_blind.play("call",False)#if dealer raised, small blind either calls or fold
+			action3 = self.small_blind.play(can_check = False, can_raise = False)#if dealer raised, small blind either calls or fold
 			if action3 == action.fold:
 				print self.small_blind.name + " folds\n"
 				self.small_blind.folded = True
@@ -180,14 +195,16 @@ class Game(object):
 		return False  # turn is not over
 
 	def end_of_round(self):
-		
+		winner_name = ""
 		if self.small_blind.folded:
 			print self.dealer.name , " won ", self.pot, " chips \n"
 			self.dealer.win_money(self.pot)
+			winner_name = self.dealer.name
 
 		elif self.dealer.folded:
 			print self.small_blind.name + " won ", self.pot, " chips \n"
 			self.small_blind.win_money(self.pot)
+			winner_name = self.small_blind.name
 
 		else:
 			if self.stage is not Stage.showdown:
@@ -202,10 +219,12 @@ class Game(object):
 			if winner == small_blind_hand:
 				self.small_blind.win_money(self.pot)  # small_blind wins
 				print self.small_blind.name +" won ", self.pot, " chips with ", winner[0].name , winner[1] , '\n'
+				winner_name = self.small_blind.name
 
 			elif winner == dealer_hand:
 				self.dealer.win_money(self.pot)
 				print self.dealer.name +" won ", self.pot, " chips with ", winner[0].name , winner[1] , '\n'
+				winner_name = self.dealer.name
 			else:
 				self.small_blind.win_money(self.pot/2.0)
 				self.dealer.win_money(self.pot/2.0)
@@ -222,4 +241,5 @@ class Game(object):
 		self.dealer = self.small_blind
 		self.small_blind = swap
 		self.community_cards = []
+		return winner_name
 
