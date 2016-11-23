@@ -28,7 +28,7 @@ def compare_agents(agent1,agent2,number_of_games,chips,blind,bet,file_name):
 chips = 100
 bet_value = 10
 blind_value = 5
-number_of_games = 100
+number_of_games = 20
 file_name = "test2.txt"
 player1 = All_In_Agent("All_In",chips)
 player2 = Agent_Bucket("Bucket",chips)	

@@ -84,7 +84,7 @@ class Game(object):
 		if (self.small_blind.chips == 0 or self.dealer.chips == 0 ) and  (not self.stage is Stage.preflop): #Have to end the game
 			return False
 
-		action1 = self.small_blind.play(can_check = self.stage is Stage.preflop)# small blind plays
+		action1 = self.small_blind.play(can_check = not self.stage is Stage.preflop)# small blind plays
 
 		if action1 is action.fold: #Small blind folded, end of round
 			print self.small_blind.name+" folds\n"
@@ -214,7 +214,6 @@ class Game(object):
 
 			small_blind_hand = comparator.get_hand(self.small_blind.show_cards() + self.community_cards) #Hand of small blind
 			dealer_hand = comparator.get_hand(self.dealer.show_cards() + self.community_cards) #Hand of big blind
-
 			winner = comparator.compare_hands(small_blind_hand, dealer_hand)
 			if winner == small_blind_hand:
 				self.small_blind.win_money(self.pot)  # small_blind wins

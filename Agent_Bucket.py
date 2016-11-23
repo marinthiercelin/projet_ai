@@ -22,6 +22,10 @@ class Agent_Bucket(player):
 			proba = [0,2,3]  if can_raise else [0,1,0] 
 		else : 
 			proba = [0,0,1] if can_raise else [0,1,0]
+			
+		if can_check : 
+			proba[1] += proba[0]
+			proba[0] = 0
 				
 		s = sum(proba)
 		if s != 0 :
