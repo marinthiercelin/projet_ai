@@ -71,6 +71,8 @@ class Game(object):
 				counterD += 1
 		
 		winner = None
+		self.small_blind.end_game()
+		self.dealer.end_game()
 		if self.dealer.chips == 0:
 			winner = self.small_blind
 		else:

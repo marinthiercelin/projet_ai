@@ -62,7 +62,9 @@ class player(object):
 	def show_cards(self):
 		return self.cards
 
-	
+	def end_game(self):
+		return None
+
 	#def oponent_action(self, action):
 			
 	def play(self, can_check = False,can_raise=True):
