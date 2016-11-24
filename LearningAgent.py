@@ -153,16 +153,16 @@ class LearningAgent(player):
 
     def end_game(self):
         with open(preflop_filename,'w') as d:
-            json.dump(self.preflop_values)
+            json.dump(self.preflop_values, d)
             d.close()
         with open(flop_filename,'w') as d:
-            json.dump(self.flop_values)
+            json.dump(self.flop_values, d)
             d.close()
         with open(turn_filename,'w') as d:
-            json.dump(self.turn_values)
+            json.dump(self.turn_values,d)
             d.close()
         with open(river_filename,'w') as d:
-            json.dump(self.river_values)
+            json.dump(self.river_values,d)
             d.close()
 
 
