@@ -38,9 +38,8 @@ class LearningAgent(player):
             self.river_values = dict()
             self.initialize_map(self.river_values, Stage.turn)
 
-        self.bucket_history = [-3]*4
-        self.action_history = [-1]*4
-        self.chips_before_round = starting_chips
+        self.bucket_history = []
+        self.action_history = []
 
     def initialize_map(self, map, stage):
         if stage is Stage.preflop: #Here we have 2 more buckets
@@ -62,7 +61,7 @@ class LearningAgent(player):
                 bucket = -1
             elif diff < 3 or same_suit:
                 bucket = -2
-        return bucket
+        return str(bucket)
 
     def get_stage(self):
         if len(self.community_cards) == 0:
@@ -93,29 +92,27 @@ class LearningAgent(player):
     def learning_rate(self, n):
         return math.log(n+1) / (n+1)
 
-    def new_hand(self):
+    def end_round(self):
         print self.action_history
-        chips_diff = self.chips - self.chips_before_round  #Positive if won, negative if lost
-        self.chips_before_round = self.chips #Update for next round
-        player.new_hand(self) #Do the usual
+        chips_diff = self.chips - self.chips_before_round  # Positive if won, negative if lost
 
         #Updating the q-values
-        if self.bucket_history != [-3, -3, -3, -3]:
-            for stage in Stage:
-                if stage is not Stage.showdown:
-                    map = self.map_getter(stage)
-                    bucket = self.bucket_history[stage.value - 1] #Get corresponding bucket
-                    act = self.action_history[stage.value - 1] #get corresponding action
-                    if bucket == -3 or act == -1: #Folded or no more money for one of the players
-                        break
-                    pair = map[bucket][act] # returns the corresponding pair
+        for stage in Stage:
+            if stage is not Stage.showdown and len(self.bucket_history) >= stage.value:
+                map = self.map_getter(stage)
+                bucket = self.bucket_history[stage.value - 1]  # Get corresponding bucket
+                act = self.action_history[stage.value - 1]  # get corresponding action
+                pair = map[bucket][act]  # returns the corresponding pair
 
-                    new_q = pair[0] + self.learning_rate(pair[1]) * (chips_diff)
+                new_q = pair[0] + self.learning_rate(pair[1]) * (chips_diff)
 
-                    map[bucket][act] = (new_q, pair[1] + 1)
+                map[bucket][act] = (new_q, pair[1] + 1)
 
-        self.bucket_history = [-3,-3,-3,-3]
-        self.action_history = [-1,-1,-1,-1]
+    def new_hand(self):
+        self.chips_before_round = self.chips
+        self.bucket_history = []
+        self.action_history = []
+        player.new_hand(self) #Do the usual
 
     #Returns the action based on the exploration function
     def get_action(self, bucket, stage, can_check, can_raise):
@@ -129,6 +126,9 @@ class LearningAgent(player):
                 max_action = i
                 maxq = tmp
 
+        if not (can_check and stage is Stage.preflop): #Opponent raised
+            if bucket < 4 and self.chips_before_round-self.chips < 70: #Fold indication and limit for bet
+                return 2
         if max_action == 2 and can_check: #Case where he folds but can check
             max_action = 0
         elif max_action == 1 and not can_raise: #case where he choses to raise but can't
@@ -141,8 +141,13 @@ class LearningAgent(player):
         bucket = self.learning_bucket(self.cards, self.community_cards, stage)
 
         act = self.get_action(bucket, stage, can_check, can_raise)
-        self.action_history[stage.value - 1] = act
-        self.bucket_history[stage.value - 1] = bucket
+
+        if stage.value == len(self.action_history):
+            self.action_history[stage.value - 1] = act
+            self.bucket_history[stage.value - 1] = bucket
+        else:
+            self.action_history.append(act)
+            self.bucket_history.append(bucket)
 
         if act == 0:
             return action.call
