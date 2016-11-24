@@ -57,9 +57,9 @@ class LearningAgent(player):
             if diff == 12: #Adjusts for case of having
                 diff = 1
             same_suit = cards[0][1] == cards[1][1]
-            if diff < 3 and same_suit:
+            if diff < 3 and same_suit and diff != 0:
                 bucket = -1
-            elif diff < 3 or same_suit:
+            elif (diff != 0 and diff < 3) or same_suit:
                 bucket = -2
         return str(bucket)
 
@@ -94,6 +94,8 @@ class LearningAgent(player):
 
     def end_round(self):
         print self.action_history
+        print self.bucket_history
+
         chips_diff = self.chips - self.chips_before_round  # Positive if won, negative if lost
 
         #Updating the q-values
@@ -129,6 +131,8 @@ class LearningAgent(player):
         if not (can_check and stage is Stage.preflop): #Opponent raised
             if bucket < 4 and self.chips_before_round-self.chips < 70: #Fold indication and limit for bet
                 return 2
+        if len(self.bucket_history) > 0 and self.bucket_history[-1] == bucket and bucket < 2 and not can_check:
+            max_action = 2
         if max_action == 2 and can_check: #Case where he folds but can check
             max_action = 0
         elif max_action == 1 and not can_raise: #case where he choses to raise but can't
@@ -139,7 +143,6 @@ class LearningAgent(player):
     def play(self, can_check=True, can_raise=True):
         stage = self.get_stage() #Returns current stage
         bucket = self.learning_bucket(self.cards, self.community_cards, stage)
-
         act = self.get_action(bucket, stage, can_check, can_raise)
 
         if stage.value == len(self.action_history):

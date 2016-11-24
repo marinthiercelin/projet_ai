@@ -65,7 +65,9 @@ class player(object):
 	def end_game(self):
 		return None
 
-	#def oponent_action(self, action):
+	def end_round(self):
+		return None
+
 			
 	def play(self, can_check = False,can_raise=True):
 		print "Player : " + self.name

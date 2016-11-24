@@ -30,6 +30,6 @@ class Bucketing(object):
 		return proba
 	
 	def bucketing(self, cards, table_cards, number=5):
-		return math.floor(number*self.proba(cards,table_cards))
+		return int(math.floor(number*self.proba(cards,table_cards)))
 		
 		
