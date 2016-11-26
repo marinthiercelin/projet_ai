@@ -30,7 +30,7 @@ class Agent_Bucket(player):
 		s = sum(proba)
 		if s != 0 :
 			proba = [a / (s*1.0) for a in proba]
-		print sum(proba)
-		print bucket
+		#print sum(proba)
+		#print bucket
 		act = random.choice([action.fold,action.call,action.bet],1,p=proba)
 		return act[0]

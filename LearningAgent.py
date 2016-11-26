@@ -3,6 +3,8 @@ from Bucketing import Bucketing
 from Game import Stage
 import json
 import math
+from Agent_Bucket import Agent_Bucket
+import numpy
 
 Ne = 2
 optimistic_reward = 10
@@ -10,11 +12,11 @@ preflop_filename = "preflop.json"
 flop_filename = "flop.json"
 turn_filename = "turn.json"
 river_filename = "river.json"
-class LearningAgent(player):
+class LearningAgent(Agent_Bucket):
 
     #Plays only small blind for now
     def __init__(self, name, starting_chips):
-        player.__init__(self, name, starting_chips)
+        Agent_Bucket.__init__(self, name, starting_chips)
         try:
             with open(preflop_filename) as d:
                 self.preflop_values = json.load(d)
@@ -47,7 +49,7 @@ class LearningAgent(player):
         else:
             start = 0
         for i in xrange(start, 6):
-            map[i] = [(0, 0)] * 3 #Because we have 3 actions
+            map[str(i)] = [(0, 0)] * 3 #Because we have 3 actions
 
     #Introduces two new buckets for preflop stage (-1 for same suit and diff < 3 and -2 for same_suit or diff > 3
     def learning_bucket(self, cards, community_cards, stage):
@@ -123,22 +125,26 @@ class LearningAgent(player):
         maxq = -10000000
 
         for i in xrange(len(values)):
-            tmp = self.exploration_function(values[i][0], values[i][1])
+            tmp = values[i][0]#self.exploration_function(values[i][0], values[i][1])
             if tmp > maxq:
                 max_action = i
                 maxq = tmp
 
-        if not (can_check and stage is Stage.preflop): #Opponent raised
+        recommended_action = Agent_Bucket.play(self).value - 1
+        '''if not (can_check and stage is Stage.preflop): #Opponent raised
             if bucket < 4 and self.chips_before_round-self.chips < 70: #Fold indication and limit for bet
                 return 2
         if len(self.bucket_history) > 0 and self.bucket_history[-1] == bucket and bucket < 2 and not can_check:
-            max_action = 2
-        if max_action == 2 and can_check: #Case where he folds but can check
-            max_action = 0
-        elif max_action == 1 and not can_raise: #case where he choses to raise but can't
+            max_action = 2'''
+        '''if max_action == 2 and can_check and can_raise: #Case where he folds but can check
             max_action = 0
 
+        if max_action == 1 and not can_raise: #case where he choses to raise but can't
+            max_action = 0'''
+
+        #act = numpy.random.choice([recommended_action, max_action], 1)
         return max_action
+
 
     def play(self, can_check=True, can_raise=True):
         stage = self.get_stage() #Returns current stage
