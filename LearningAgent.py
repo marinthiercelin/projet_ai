@@ -146,7 +146,7 @@ class LearningAgent(Agent_Bucket):
         return max_action
 
 
-    def play(self, can_check=True, can_raise=True):
+    def play(self, can_check=True, can_raise=True, pot=None):
         stage = self.get_stage() #Returns current stage
         bucket = self.learning_bucket(self.cards, self.community_cards, stage)
         act = self.get_action(bucket, stage, can_check, can_raise)

@@ -6,7 +6,7 @@ from LearningAgent import LearningAgent
 from All_In_Agent import All_In_Agent
 from random_agent import random_agent
 from Agent_Bucket import Agent_Bucket
-
+from New_Agent import Utility_Agent
 apprentice = 0
 bucket = 0
 
@@ -14,11 +14,13 @@ bucket = 0
 
 #for i in range(0,10):
 
-player1 = LearningAgent("Apprentice Bot", 1000)
-player2 = Agent_Bucket("Bucket", 1000)
+player1 = Utility_Agent("Apprentice Bot", 100)
+player2 = LearningAgent("Learning", 100)
 
-game = Game(player1, player2, 10, 20)
-if game.start_game()[5] == player1.name:
+game = Game(player1, player2, 5, 10)
+res = game.start_game()
+print res
+if res[5] == player1.name:
     apprentice += 1
 else:
     bucket += 1

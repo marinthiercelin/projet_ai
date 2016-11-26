@@ -44,7 +44,7 @@ class HandComparator(object):
                 if hand1[0] == Hand.two_pair: #got two pair
                     if ranks1[2] > ranks2[2]:
                         return hand1
-                    elif ranks1[2] < ranks2[1]:
+                    elif ranks1[2] < ranks2[2]:
                         return hand2
 
                 if len(diff) == 0:
@@ -245,17 +245,18 @@ class HandComparator(object):
                 return False, None
 
 
-'''d = HandComparator()
+d = HandComparator()
 deck = Deck.Deck()
 
-cards = [(4,"Diamonds"), (11, "Hearts")]
-cards2 = [(13,"Diamonds"), (12,"Hearts")]
-comm = [(1,"Hearts"), (1,"Diamonds"), (6,"Diamonds"), (6,"Hearts"), (13, "Clubs")]
+cards2 = [(9,"Diamonds"), (9, "Spades")]
+cards = [(11,"Spades"), (3,"Hearts")]
+comm = [(13,"Hearts"), (13,"Diamonds"), (6,"Clubs"), (10,"Hearts"), (10, "Spades")]
 h1 = d.get_hand(cards + comm)
 h2 = d.get_hand(cards2 + comm)
 print h1
 print h2
 print d.compare_hands(h1,h2)
+'''
 for i in range(0,10):
     e = deck.get(7)
     f = deck.get(7)
