@@ -14,8 +14,8 @@ bucket = 0
 
 #for i in range(0,10):
 
-player1 = Utility_Agent("Apprentice Bot", 100)
-player2 = LearningAgent("Learning", 100)
+player1 = Utility_Agent("Apprentice Bot1", 100)
+player2 = player("YOU", 100)
 
 game = Game(player1, player2, 5, 10)
 res = game.start_game()

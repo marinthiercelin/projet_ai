@@ -245,7 +245,7 @@ class HandComparator(object):
                 return False, None
 
 
-d = HandComparator()
+'''d = HandComparator()
 deck = Deck.Deck()
 
 cards2 = [(9,"Diamonds"), (9, "Spades")]
@@ -256,7 +256,7 @@ h2 = d.get_hand(cards2 + comm)
 print h1
 print h2
 print d.compare_hands(h1,h2)
-'''
+
 for i in range(0,10):
     e = deck.get(7)
     f = deck.get(7)

@@ -4,6 +4,8 @@ from Game import Stage
 from enum import Enum
 import numpy
 
+step = 0
+
 class Strategy(Enum):
     agressive = 1
     defensive = 2
@@ -14,12 +16,13 @@ class Utility_Agent(player):
 
     def __init__(self, name, starting_chips, bluff = False):
         player.__init__(self, name, starting_chips)
-        self.opp_strategy = Strategy.defensive #Will tend to check and call on smaller amounts and more folds
-        self.strategy = Strategy.agressive #Will tend to raise and call on higher amounts
+        self.opp_strategy = Strategy.agressive #Will tend to check and call on smaller amounts and more folds
+        self.strategy = Strategy.defensive #Will tend to raise and call on higher amounts
         self.bluff = bluff
-
+        self.step = step
+        self.prev_op = '-'
         #These are the parameters, which are a certain number of votes for each heuristic function
-        self.prev_action_votes = 5
+        self.prev_action_weight = .5
         self.opp_strategy_votes = 5
         self.game_stage_votes = 5
 
@@ -61,46 +64,45 @@ class Utility_Agent(player):
 
     #Returns an array of votes [call, raise, fold]
     def get_prevaction_votes(self, stage, win_prob, opp_action):
-        votes = self.prev_action_votes
         if stage is Stage.preflop:
             if opp_action == action.bet:
                 if self.strategy == Strategy.defensive: #Being defensive
-                    return [0.5*win_prob*votes, 0.5*win_prob*votes, (1-win_prob)*votes]
+                    return [3*win_prob, 2*win_prob, 3*(1-win_prob)]
                 else: #bluffing
-                    return [0.25*win_prob*votes, 0.75*win_prob*votes, (1-win_prob)*votes]
+                    return [4*win_prob, 3*win_prob , 2*(1-win_prob)]
             else: #Checked/called or folded
                 if self.strategy == Strategy.defensive:
-                    return [0.8*votes, 0.2*votes, 0]
+                    return [4*win_prob, 3*win_prob, 0]
                 else:
-                    return [0.5*votes, 0.5*votes, 0]
+                    return [5*win_prob, 5*win_prob, 0]
         elif stage is Stage.flop:
             if self.opp_prevaction == action.bet:
                 if self.strategy == Strategy.agressive or self.strategy == Strategy.bluff:
-                    return [0.4 * win_prob * votes, 0.6 * win_prob * votes, (1 - win_prob) * votes]
+                    return [4 * win_prob, 5 * win_prob, 3 * (1 - win_prob)]
                 else:
-                    return [0.7 * win_prob * votes, 0.1 * win_prob * votes, (1 - 0.8 * win_prob) * votes]
+                    return [4 * win_prob, 3 * win_prob, 3 * (1 - win_prob)]
             else:
                 if self.strategy == Strategy.defensive:
-                    return [0.8*win_prob*votes, 0.2*win_prob*votes, (1-win_prob)*votes]
+                    return [3*win_prob, 2*win_prob, 0]
                 elif self.strategy == Strategy.agressive:
-                    return [0.5*win_prob*votes, 0.5*win_prob*votes, (1-win_prob)*votes]
+                    return [3*win_prob, 3*win_prob, 0]
                 else: #Bluffing
-                    return [0.2*(1-win_prob)*votes,0.8*(1-win_prob), 0]
+                    return [2*(1-win_prob), 3*(1-win_prob), 0]
         else:
             if self.opp_prevaction == action.bet:
                 if self.strategy == Strategy.agressive:
-                    return [0.35 * win_prob * votes, 0.65 * win_prob * votes, (1 - win_prob) * votes]
+                    return [3 * win_prob, 3 * win_prob,  2*(1 - win_prob)]
                 elif self.strategy == Strategy.bluff:
-                    return [0.1*(1-win_prob)*votes, 0.9*(1-win_prob), 0]
+                    return [2*(1-win_prob), 2*(1-win_prob), 0]
                 else:
-                    return [0.7 * win_prob * votes, 0.1 * win_prob * votes, (1 - 0.8 * win_prob) * votes]
+                    return [2 * win_prob, win_prob, 2*(1 - win_prob) ]
             else:
                 if self.strategy == Strategy.defensive:
-                    return [0.8*win_prob*votes, 0.2*win_prob*votes, (1-win_prob)*votes]
+                    return [5*win_prob, 2*win_prob, 0]
                 elif self.strategy == Strategy.agressive:
-                    return [0.5*win_prob*votes, 0.5*win_prob*votes, (1-win_prob)*votes]
+                    return [3*win_prob, 3*win_prob, 0]
                 else: #Bluffing
-                    return [0.2*(1-win_prob)*votes,0.8*(1-win_prob), 0]
+                    return [3*(1-win_prob), 3*(1-win_prob), 0]
 
     #Returns an array of votes [call, raise, fold]
     def get_oppstrategy_votes(self, stage, win_prob, pot_size, bet_for_round):
@@ -159,28 +161,27 @@ class Utility_Agent(player):
 
     def get_stage_votes(self, stage, win_prob, pot_size, bet_for_round):
         expected_wins = win_prob*pot_size - (1-win_prob)*bet_for_round
-        print expected_wins
-        votes = self.game_stage_votes
+
         if stage is Stage.preflop:
-            if expected_wins >= 0:
-                return [0.5*votes, 0.5*win_prob*votes, 0.5*(1-win_prob)*votes]
+            if expected_wins >= -bet_for_round/2.0:
+                return [10*win_prob, 5*win_prob, 3*(1-win_prob)]
             else:
-                return [0.3 * win_prob * votes, 0.3 * win_prob * votes, (1 - 0.6*win_prob) * votes]
+                return [3 * win_prob, 2 * win_prob, 2*(1 - win_prob)]
         elif stage is Stage.flop:
             if expected_wins >= 0:
-                return [0.5 * votes, 0.5 * win_prob * votes, 0.5*(1 - win_prob) * votes]
+                return [7*win_prob, 4 * win_prob, 2*(1 - win_prob)]
             else:
-                return [0.1 * win_prob * votes, 0.1 * win_prob * votes, (1 - 0.2*win_prob) * votes]
+                return [2 * win_prob, 2 * win_prob, 3*(1 - win_prob)]
         elif stage is Stage.turn:
             if expected_wins >= 0:
-                return [0.6 * votes, 0.4 * win_prob * votes, 0.4*(1 - win_prob) * votes]
+                return [7*win_prob, 5 * win_prob, 2*(1 - win_prob)]
             else:
-                return [0.2 * win_prob * votes, 0.1 * win_prob * votes, (1 - 0.3*win_prob) * votes]
+                return [2 * win_prob,  2*win_prob, 4*(1 - win_prob)]
         else:
             if expected_wins >= -pot_size/10:
-                return [0.5*votes, 0.2 * win_prob * votes + 0.3*votes, 0.2*(1 - win_prob) * votes]
+                return [5*win_prob, 4*win_prob, 2*(1 - win_prob)]
             else:
-                return [0.2 * win_prob * votes, 0.1 * win_prob * votes, (1 - 0.3*win_prob) * votes]
+                return [2 * win_prob, win_prob, 3*(1 - win_prob)]
 
     #Returns the current stage
     def get_stage(self):
@@ -197,31 +198,55 @@ class Utility_Agent(player):
         stage = self.get_stage()
         win_prob = Bucketing().proba(self.cards, self.community_cards)
         self.round_bet = self.chips_before_round - self.chips
-        #prev_action_votes = self.get_prevaction_votes(stage,win_prob,self.opp_prevaction)
+        prev_action_votes = self.get_prevaction_votes(stage, win_prob, self.opp_prevaction)
         #opp_strategy_votes = self.get_oppstrategy_votes(stage, win_prob, pot_size, self.round_bet)
         stage_votes = self.get_stage_votes(stage, win_prob, pot_size, self.round_bet)
 
+        d = sum(prev_action_votes)
+        if d != 0:
+            prev_action_votes = [vote/d for vote in prev_action_votes]
+        else:
+            print prev_action_votes
         votes = [0]*3
         for i in range(3):
-            votes[i] = stage_votes[i] #+ prev_action_votes[i]  #+ opp_strategy_votes[i]
+            votes[i] = stage_votes[i] + prev_action_votes[i] * self.prev_action_weight  #+ opp_strategy_votes[i]
 
         s = sum(votes)
 
         print votes, s, win_prob
         return [vote/s for vote in votes] #Returns normalized votes corresponding to probabilities
 
-    #def update_votes(self): #Upd3
+    def update_weights(self, wins): #Upd3
+        if wins < 0:
+            if self.prev_op == '+':
+                self.prev_action_weight -= self.step
+                self.prev_op = '-'
+            elif self.prev_op == '-':
+                self.prev_action_weight += self.step
+                self.prev_op = '+'
+        else:
+            if self.prev_op == '+':
+                self.prev_action_weight += self.step
+            else:
+                self.prev_action_weight -= self.step
+        self.step = self.step/1.05
+
     # ates the number of votes for each stage and each heuristic corresponding to the win or loss
 
     def play(self, can_check=False, can_raise = True, pot=None):
         votes = self.get_votes(pot)
-        act = numpy.random.choice([action.call, action.bet, action.fold], p = votes)
+        act = numpy.random.choice([action.call, action.bet, action.fold],1, p = votes)[0]
         stage = self.get_stage()
+
         if act == action.fold and (can_check or (not can_check and stage == Stage.preflop and self.opp_prevaction != action.bet)):
+            print "not sure"
             act = action.call
         return act
 
     def end_round(self):
         self.num_hands += 1
+        self.update_weights(self.chips - self.chips_before_round)
+        print self.prev_action_weight
+
 
     #def end_game(self):

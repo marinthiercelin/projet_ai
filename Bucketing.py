@@ -11,6 +11,7 @@ class Bucketing(object):
 	def proba(self, cards, table_cards):
 		compteur = 0
 		diviseur = 0
+
 		dealt = cards + table_cards
 		remaining = list(ordered_list)
 		for card in dealt:
