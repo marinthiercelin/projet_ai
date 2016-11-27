@@ -21,7 +21,7 @@ class Game(object):
     # Init takes an array of players and the number of players set to 1
     # Blinds are the first chips to play the game
     def __init__(self, player1, player2, blind, bet_value, deck=None):
-        self.bet_value = bet_value
+	self.bet_value = bet_value
         self.dealer = player1  # Second to play
         self.small_blind = player2  # First to play
         self.community_cards = []
@@ -68,7 +68,7 @@ class Game(object):
                 counter1 += 1
             elif winner_name is name2:
                 counter2 += 1
-            else:
+	    else:
                 counterD += 1
 
         winner = None
@@ -98,7 +98,7 @@ class Game(object):
 
             small_blind_bet = self.small_blind.collect_bet()
             dealer_bet = self.dealer.collect_bet()
-            self.pot += small_blind_bet + dealer_bet
+	    self.pot += small_blind_bet + dealer_bet
             return False
 
         # We don't care if small blind calls or checks at this point, and if he raises, he adds it to his current bet
@@ -150,11 +150,10 @@ class Game(object):
 
             action3 = self.small_blind.play(can_check=False,
                                             can_raise=False, pot=self.pot)  # if dealer raised, small blind either calls or fold
-			self.dealer.opponent_action(action3)
+	    self.dealer.opponent_action(action3)
             if action3 == action.fold:
                 print self.small_blind.name + " folds\n"
                 self.small_blind.folded = True
-
                 small_blind_bet = self.small_blind.collect_bet()
                 dealer_bet = self.dealer.collect_bet()
                 self.pot += small_blind_bet + dealer_bet
