@@ -21,6 +21,7 @@ class Agent_Bucket(player):
 		elif bucket == 4:
 			proba = [0,2,3]  if can_raise else [0,1,0] 
 		else : 
+			print "Cards with proba of winning 1 ? " + str(self.cards)
 			proba = [0,0,1] if can_raise else [0,1,0]
 			
 		if can_check : 
