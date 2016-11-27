@@ -6,7 +6,7 @@ class bayesian_trainer(player):
 		player.__init__(self,name,chips)
 		self.opponent = opponent
 	
-	def play(self, can_check = False,can_raise=True):
+	def play(self, can_check = False,can_raise=True, pot = None):
 		bucket = self.bucket()
 		pr = []
 		if bucket is 1:

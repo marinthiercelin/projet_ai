@@ -68,8 +68,10 @@ class player(object):
 	def end_round(self):
 		return None
 
+	def opponent_action(self,act):
+		return None
 			
-	def play(self, can_check = False,can_raise=True):
+	def play(self, can_check = False,can_raise=True, pot=None):
 		print "Player : " + self.name
 		print "Your statement is " , self.chips
 		print "Your cards are " + self.card_string(self.cards)
