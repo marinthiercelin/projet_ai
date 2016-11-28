@@ -8,10 +8,10 @@ from All_In_Agent import All_In_Agent
 from LearningAgent import LearningAgent
 
 
-player2 = player("sparring_partner", 100)
+player2 = bayesian_trainer("sparring_partner", 100)
 player1 = bayesian("Bot_to_train", 100,player2)
 
-for x in xrange(1):
+for x in xrange(50):
 	player1.new_game(100)
 	player2.new_game(100)
 	game = Game(player1, player2, 5, 10 )

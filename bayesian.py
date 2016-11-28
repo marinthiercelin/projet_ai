@@ -22,7 +22,7 @@ class bayesian(Agent_Bucket):
 
 	def bucket(self,cards):#technique of bucketing opponent_cards from 0 to 4
 		v = self.classifier.bucketing(cards, self.community_cards)
-		return v
+		return v if v < 5 else 4
         
 	def get_opp_cards(self,bucket):
 		self.opp_bucket = bucket

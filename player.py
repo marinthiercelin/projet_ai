@@ -113,6 +113,3 @@ class player(object):
 				string += str(card[0])
 			string += " of " + card[1] + " |"
 		return "No cards" if string == "" else string
-		
-	def opp_action(action): #get opponent action
-		return None
