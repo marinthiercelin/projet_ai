@@ -107,7 +107,10 @@ class HandComparator(object):
         elif len(consecutive_cards) >= 5:  # Straight flush
             return Hand.straight_flush, consecutive_cards[0:5]
         else:  # Flush
-            return Hand.flush, flush_cards[0:5]
+            if (1, flush_suit) == flush_cards[0]:
+                return flush_cards[0] + flush_cards[0:4]
+            else:
+                return Hand.flush, flush_cards[0:5]
 
     #Return (True, type, cards) if the current hand contains a duplicate hand (pair, two pair, 3 of a kind, 4 of a kind, full House)
     #Cards is reverse sorted (Highest pair before)
