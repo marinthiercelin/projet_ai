@@ -41,15 +41,26 @@ class LearningAgent(Agent_Bucket):
             self.initialize_map(self.river_values, Stage.turn)
 
         self.bucket_history = []
-        self.action_history = []
+        self.action_history = [[]*4] #one for each stage
+        self.opp_action_history = [[]*4] #one empty table for each stage
+        self.opp_prev_action = None
+
 
     def initialize_map(self, map, stage):
         if stage is Stage.preflop: #Here we have 2 more buckets
             start = -2
         else:
             start = 0
+
         for i in xrange(start, 6):
-            map[str(i)] = [(0, 0)] * 3 #Because we have 3 actions
+            map[str(i)] = [[0]*3] * 3 #Because we have 3 actions
+
+
+    def opponent_action(self, act):
+        self.opp_prev_action = act
+        if act is not action.fold:
+            stage = self.get_stage()
+            self.opp_action_history[stage.value-1].append(act)
 
     #Introduces two new buckets for preflop stage (-1 for same suit and diff < 3 and -2 for same_suit or diff > 3
     def learning_bucket(self, cards, community_cards, stage):
@@ -92,7 +103,7 @@ class LearningAgent(Agent_Bucket):
             return q
 
     def learning_rate(self, n):
-        return math.log(n+1) / (n+1)
+        return 1
 
     def end_round(self):
         print self.action_history
@@ -100,17 +111,22 @@ class LearningAgent(Agent_Bucket):
 
         chips_diff = self.chips - self.chips_before_round  # Positive if won, negative if lost
 
-        #Updating the q-values
-        for stage in Stage:
-            if stage is not Stage.showdown and len(self.bucket_history) >= stage.value:
-                map = self.map_getter(stage)
-                bucket = self.bucket_history[stage.value - 1]  # Get corresponding bucket
-                act = self.action_history[stage.value - 1]  # get corresponding action
-                pair = map[bucket][act]  # returns the corresponding pair
+        max_q = 0
+        for i in reversed(range(1, 5)):
+            if len(self.bucket_history) >= i:
+                map = self.map_getter(Stage(i))
+                bucket = self.bucket_history[i - 1]  # Get corresponding bucket
+                act = self.action_history[i - 1]  # get corresponding actions
+                opp_actions = self.opp_action_history[i - 1]
 
-                new_q = pair[0] + self.learning_rate(pair[1]) * (chips_diff)
+                '''pair = map[bucket][act]  # returns the corresponding pair
 
+                new_q = pair[0] + self.learning_rate(pair[1]) * (chips_diff + 0.9*(max_q - pair[0]))
                 map[bucket][act] = (new_q, pair[1] + 1)
+                max_q = pair[0]'''
+
+
+
 
     def new_hand(self):
         self.chips_before_round = self.chips
@@ -125,22 +141,15 @@ class LearningAgent(Agent_Bucket):
         maxq = -10000000
 
         for i in xrange(len(values)):
-            tmp = values[i][0]#self.exploration_function(values[i][0], values[i][1])
+            tmp = self.exploration_function(values[i][0], values[i][1])
             if tmp > maxq:
                 max_action = i
                 maxq = tmp
-
-        recommended_action = Agent_Bucket.play(self).value - 1
-        '''if not (can_check and stage is Stage.preflop): #Opponent raised
-            if bucket < 4 and self.chips_before_round-self.chips < 70: #Fold indication and limit for bet
-                return 2
-        if len(self.bucket_history) > 0 and self.bucket_history[-1] == bucket and bucket < 2 and not can_check:
-            max_action = 2'''
-        '''if max_action == 2 and can_check and can_raise: #Case where he folds but can check
+        if max_action == 2 and can_check and can_raise: #Case where he folds but can check
             max_action = 0
 
-        if max_action == 1 and not can_raise: #case where he choses to raise but can't
-            max_action = 0'''
+        '''if max_action == 1 and not can_raise: #case where he choses to raise but can't
+            max_action = 0 '''
 
         #act = numpy.random.choice([recommended_action, max_action], 1)
         return max_action
@@ -151,11 +160,10 @@ class LearningAgent(Agent_Bucket):
         bucket = self.learning_bucket(self.cards, self.community_cards, stage)
         act = self.get_action(bucket, stage, can_check, can_raise)
 
+        self.action_history[stage.value - 1].append(act)
         if stage.value == len(self.action_history):
-            self.action_history[stage.value - 1] = act
             self.bucket_history[stage.value - 1] = bucket
         else:
-            self.action_history.append(act)
             self.bucket_history.append(bucket)
 
         if act == 0:

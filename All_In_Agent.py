@@ -4,7 +4,7 @@ class All_In_Agent(player):
 	def __init__(self, name, chips):
 		player.__init__(self, name, chips)
 	
-	def play(self, can_check = False, can_raise = True):
+	def play(self, can_check = False, can_raise = True, pot = None):
 		if can_raise: 
 			return action.bet
 		else :

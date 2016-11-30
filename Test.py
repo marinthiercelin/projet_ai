@@ -9,25 +9,28 @@ from Agent_Bucket import Agent_Bucket
 from New_Agent import Utility_Agent
 apprentice = 0
 bucket = 0
-
+weight = 0
 #sys.stdout = open(os.devnull, "w")
 
-#for i in range(0,10):
 
-player1 = Utility_Agent("Apprentice Bot1", 100)
-player2 = player("YOU", 100)
+for i in range(0,1):
 
-game = Game(player1, player2, 5, 10)
-res = game.start_game()
-print res
-if res[5] == player1.name:
-    apprentice += 1
-else:
-    bucket += 1
+    player1 = Agent_Bucket("bucket", 1000)
+    player2 = Utility_Agent("utility", 1000,weight)
 
-#sys.stdout = sys.__stdout__
+    game = Game(player1, player2, 10, 20)
+    res = game.start_game()
+    #weight = player1.prev_action_weight
+    print res
+    if res[5] == player1.name:
+        apprentice += 1
+    else:
+        bucket += 1
 
-print "Apprentice won ", apprentice, " games and Bucket Agent won ", bucket, " Games out of 10"
+
+sys.stdout = sys.__stdout__
+#print weight, player1.prev_action_weight
+print player1.name," won ", apprentice, " games and ",player2.name," won ", bucket, " Games out of 10"
 
 '''print player1.preflop_values
 print player1.flop_values

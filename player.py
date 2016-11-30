@@ -68,7 +68,7 @@ class player(object):
 	def end_round(self):
 		return None
 
-	def opponent_action(self,act):
+	def opponent_action(self, act):
 		return None
 			
 	def play(self, can_check = False,can_raise=True, pot=None):

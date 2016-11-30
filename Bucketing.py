@@ -6,8 +6,7 @@ import math
 comp = HandComparator()
 
 class Bucketing(object):
-	
-		
+
 	def proba(self, cards, table_cards):
 		compteur = 0
 		diviseur = 0
