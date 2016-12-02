@@ -42,8 +42,9 @@ class Utility_Agent(player):
 
     #Updates the number of checks/raise/fold #!!!Needs to be updated in GAME and PLAYER!!!#
     def opponent_action(self, act):
-        self.opp_prevaction = act
-        self.opp_actions[act.value - 1] += 1
+        if act is not None:
+            self.opp_prevaction = act
+            self.opp_actions[act.value - 1] += 1
 
     #Updates both the opponent's strategy and the agent's strategy
     def update_strategy(self, wins):
@@ -168,12 +169,12 @@ class Utility_Agent(player):
                 if win_prob > 0.85:
                     return [7*win_prob, 2*win_prob, 1-win_prob]
                 else:
-                    return [9*win_prob, win_prob, 1-win_prob]
+                    return [9*win_prob, 0, 1-win_prob]
             elif can_check: #Dealer
                 if win_prob > 0.9:
                     return [7*win_prob, 2*win_prob, 1-win_prob]
                 else:
-                    return [9*win_prob, win_prob, 1-win_prob]
+                    return [10*win_prob, win_prob, 1-win_prob]
             else:#Opponent raised at preflop, call or fold
                 if win_prob > 0.9:
                     return [5*win_prob, 0, 1-win_prob]
@@ -188,9 +189,9 @@ class Utility_Agent(player):
                     elif win_prob > 0.7:
                         return [7*win_prob, 2*win_prob, 1-win_prob]
                     else:
-                        return [8*win_prob, 2*win_prob, 1-win_prob]
+                        return [8*win_prob, win_prob, 1-win_prob]
                 else:
-                    return [8*win_prob, win_prob, 1-win_prob]
+                    return [7*win_prob, 0, 2*(1-win_prob)]
             elif can_raise: #Opponent raised and we can raise again
                 if expected_wins > bet_for_round:
                     if win_prob > 0.9:
@@ -198,7 +199,7 @@ class Utility_Agent(player):
                     elif win_prob > 0.7:
                         return [5*win_prob, 4*win_prob, 1-win_prob]
                     else:
-                        return [8*win_prob, win_prob, 2*(1-win_prob)]
+                        return [8*win_prob, 0, 2*(1-win_prob)]
                 else:
                     return [4*win_prob, 0, 3*(1-win_prob)]
             else: #call or fold
@@ -220,9 +221,9 @@ class Utility_Agent(player):
                     elif win_prob > 0.7:
                         return [5*win_prob, 5*win_prob, 1-win_prob]
                     else:
-                        return [8*win_prob, win_prob, 2*(1-win_prob)]
+                        return [8*win_prob, 0, 2*(1-win_prob)]
                 else:
-                    return [8*win_prob, win_prob, 1-win_prob]
+                    return [7*win_prob, 0, 2*(1-win_prob)]
             elif can_raise: #Opponent raised and we can raise again
                 if expected_wins > bet_for_round:
                     if win_prob > 0.9:
@@ -230,7 +231,7 @@ class Utility_Agent(player):
                     elif win_prob > 0.7:
                         return [5*win_prob, 4*win_prob, 1-win_prob]
                     else:
-                        return [2*win_prob, win_prob, 2*(1-win_prob)]
+                        return [2*win_prob, 0, 2*(1-win_prob)]
                 else:
                     return [4*win_prob, 0, 3*(1-win_prob)]
             else: #call or fold
@@ -238,9 +239,9 @@ class Utility_Agent(player):
                     if win_prob > 0.9:
                         return [9*win_prob, 0, 1-win_prob]
                     elif win_prob > 0.7:
-                        return [7*win_prob,0, 2*(1-win_prob)]
+                        return [7*win_prob, 0, 2*(1-win_prob)]
                     else:
-                        return [4*win_prob,0, 6*(1-win_prob)]
+                        return [4*win_prob, 0, 6*(1-win_prob)]
                 else:
                     return [3*win_prob, 0, 4*(1-win_prob)]
 
@@ -252,9 +253,9 @@ class Utility_Agent(player):
                     elif win_prob > 0.7:
                         return [5*win_prob, 4*win_prob, 1-win_prob]
                     else:
-                        return [2*win_prob, win_prob, 2*(1-win_prob)]
+                        return [3*win_prob, 0, 2*(1-win_prob)]
                 else:
-                    return [8*win_prob, win_prob, 1-win_prob]
+                    return [8*win_prob,0, 1-win_prob]
             elif can_raise: #Opponent raised and we can raise again
                 if expected_wins > bet_for_round:
                     if win_prob > 0.9:
@@ -262,7 +263,7 @@ class Utility_Agent(player):
                     elif win_prob > 0.7:
                         return [6*win_prob, 3*win_prob, 1-win_prob]
                     else:
-                        return [4*win_prob, win_prob, 5*(1-win_prob)]
+                        return [4*win_prob, 0, 5*(1-win_prob)]
                 else:
                     return [2*win_prob, 0, 3*(1-win_prob)]
             else: #call or fold
@@ -272,7 +273,7 @@ class Utility_Agent(player):
                     elif win_prob > 0.7:
                         return [6*win_prob, 0, 2*(1-win_prob)]
                     else:
-                        return [2*win_prob,0, 4*(1-win_prob)]
+                        return [3*win_prob,0, 4*(1-win_prob)]
                 else:
                     return [2*win_prob, 0, 4*(1-win_prob)]
 
@@ -304,7 +305,7 @@ class Utility_Agent(player):
 
         s = sum(votes)
 
-        print votes, s, win_prob
+        print win_prob
         return [vote/s for vote in votes] #Returns normalized votes corresponding to probabilities
 
     def update_weights(self, wins): #Upd3
@@ -329,6 +330,8 @@ class Utility_Agent(player):
 
     def play(self, can_check=False, can_raise=True, pot=None):
         votes = self.get_votes(pot, can_check, can_raise)
+
+        print votes
 
         act = numpy.random.choice([action.call, action.bet, action.fold],1, p = votes)[0]
         stage = self.get_stage()

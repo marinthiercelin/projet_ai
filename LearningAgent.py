@@ -5,8 +5,9 @@ import json
 import math
 from Agent_Bucket import Agent_Bucket
 import numpy
+from HandComparator import HandComparator
 
-Ne = 2
+Ne = -1
 optimistic_reward = 10
 preflop_filename = "preflop.json"
 flop_filename = "flop.json"
@@ -41,9 +42,11 @@ class LearningAgent(Agent_Bucket):
             self.initialize_map(self.river_values, Stage.turn)
 
         self.bucket_history = []
-        self.action_history = [[]*4] #one for each stage
-        self.opp_action_history = [[]*4] #one empty table for each stage
+        self.action_history = [[],[],[],[]] #one for each stage
         self.opp_prev_action = None
+        self.starting_chips = starting_chips
+        self.opp_action_history = [[], [], [], []]
+        self.dealer = False
 
 
     def initialize_map(self, map, stage):
@@ -53,17 +56,18 @@ class LearningAgent(Agent_Bucket):
             start = 0
 
         for i in xrange(start, 6):
-            map[str(i)] = [[0]*3] * 3 #Because we have 3 actions
+            map[str(i)] = [[1,1,1], [1,1,1]] #2 actions for opponent and 3 actions for player
 
 
-    def opponent_action(self, act):
-        self.opp_prev_action = act
+    '''def opponent_action(self, act):
+        stage = self.get_stage()
         if act is not action.fold:
             stage = self.get_stage()
-            self.opp_action_history[stage.value-1].append(act)
+            self.opp_action_history[stage.value-1].append(act)'''
 
     #Introduces two new buckets for preflop stage (-1 for same suit and diff < 3 and -2 for same_suit or diff > 3
-    def learning_bucket(self, cards, community_cards, stage):
+    @staticmethod
+    def learning_bucket(cards, community_cards, stage):
         bucket = Bucketing().bucketing(cards, community_cards)
         if stage is Stage.preflop: #Preflop bucketing
             diff = abs(cards[0][0] - cards[1][0]) #Difference between the two cards
@@ -98,73 +102,104 @@ class LearningAgent(Agent_Bucket):
 
     def exploration_function(self, q, freq):
         if freq < Ne:
-            return optimistic_reward
+            return numpy.random.choice(10)
         else:
             return q
 
     def learning_rate(self, n):
         return 1
 
-    def end_round(self):
-        print self.action_history
-        print self.bucket_history
-
-        chips_diff = self.chips - self.chips_before_round  # Positive if won, negative if lost
-
-        max_q = 0
+    #Learns new values when student has not folded
+    def learn(self, actions, opponent_actions, buckets, amount, dealer, fold=False):
         for i in reversed(range(1, 5)):
-            if len(self.bucket_history) >= i:
+            if len(buckets) >= i:
                 map = self.map_getter(Stage(i))
-                bucket = self.bucket_history[i - 1]  # Get corresponding bucket
-                act = self.action_history[i - 1]  # get corresponding actions
-                opp_actions = self.opp_action_history[i - 1]
+                bucket = buckets[i - 1]  # Get corresponding bucket
+                acts = actions[i - 1]  # get corresponding actions list
+                opp_acts = opponent_actions[i - 1] #list for
+                location = map[bucket]
 
-                '''pair = map[bucket][act]  # returns the corresponding pair
+                if dealer: #Can have only one decision based on action of opponent
+                    opp_act = opp_acts[0] #action
+                    act = acts[0] #reaction
+                    #q_value = location[opp_act][act]
+                else: #can have two decisions
+                    if len(acts) == 2: #have to update two values
+                        opp_act1 = 0 #Consider it as nothing
+                        act1 = acts[0]
+                        self.update_list(location, opp_act1, act1, math.fabs(amount)/amount)
+                        opp_act = opp_acts[0] #Reaction of opponent to act1
+                        act = acts[1]  # reaction of player to opp_act2
 
-                new_q = pair[0] + self.learning_rate(pair[1]) * (chips_diff + 0.9*(max_q - pair[0]))
-                map[bucket][act] = (new_q, pair[1] + 1)
-                max_q = pair[0]'''
+                    else: #update one value here opponent
+                        opp_act = 0 #player is small blind to opponent doesnt play before it
+                        act = acts[0]
+
+                        print acts, opp_acts
+
+                self.update_list(location, opp_act, act, math.fabs(amount) / amount)
+                if fold:
+                    break
+
+    #Updates the values according to the outcome
+    def update_list(self, location, opp_action, act, win):
+        if opp_action == 0 and act == 0:
+            location[opp_action][act] += win/3.0
+        else :
+            location[opp_action][act] += win
 
 
+    def end_round(self):
+        chips_diff = self.chips - self.chips_before_round  # Positive if won, negative if lost
+        if not self.folded and chips_diff != 0: #Case where we fold to be treated separately
+            self.learn(self.action_history, self.opp_action_history, self.bucket_history, chips_diff, self.dealer)
+        else:
+            print "folded"
+        self.dealer = not self.dealer
 
 
     def new_hand(self):
         self.chips_before_round = self.chips
         self.bucket_history = []
-        self.action_history = []
+        self.action_history = [[], [], [], []]
+        self.opp_action_history = [[], [], [], []]
         player.new_hand(self) #Do the usual
 
     #Returns the action based on the exploration function
-    def get_action(self, bucket, stage, can_check, can_raise):
-        values = self.map_getter(stage)[bucket] #Returns an array[(q1,f1), (q2,f2), (q3,f3)] (call/check, raise, fold)
+    def get_action(self, bucket, stage, opp_action, can_check, can_raise):
+        values = self.map_getter(stage)[bucket][opp_action]
+
         max_action = None
         maxq = -10000000
 
         for i in xrange(len(values)):
-            tmp = self.exploration_function(values[i][0], values[i][1])
+            tmp = values[i]
             if tmp > maxq:
                 max_action = i
                 maxq = tmp
-        if max_action == 2 and can_check and can_raise: #Case where he folds but can check
+
+        '''randomize = numpy.random.choice(10)
+        if randomize == 1:
+            max_action = numpy.random.choice(3)'''
+
+        if max_action == 2 and can_check: #or stage is Stage.preflop and not can_check and can_raise:
             max_action = 0
 
-        '''if max_action == 1 and not can_raise: #case where he choses to raise but can't
-            max_action = 0 '''
+        if max_action == 1 and not can_raise: #case where he choses to raise but can't
+            max_action = 0
 
-        #act = numpy.random.choice([recommended_action, max_action], 1)
         return max_action
-
 
     def play(self, can_check=True, can_raise=True, pot=None):
         stage = self.get_stage() #Returns current stage
         bucket = self.learning_bucket(self.cards, self.community_cards, stage)
-        act = self.get_action(bucket, stage, can_check, can_raise)
+
+        act = self.get_action(bucket, stage,self.opp_prev_action, can_check, can_raise)
+
+        if stage.value != len(self.bucket_history):
+            self.bucket_history.append(bucket)
 
         self.action_history[stage.value - 1].append(act)
-        if stage.value == len(self.action_history):
-            self.bucket_history[stage.value - 1] = bucket
-        else:
-            self.bucket_history.append(bucket)
 
         if act == 0:
             return action.call
@@ -186,6 +221,89 @@ class LearningAgent(Agent_Bucket):
         with open(river_filename,'w') as d:
             json.dump(self.river_values,d)
             d.close()
+
+    def opponent_action(self, act):
+        stage = self.get_stage()
+        if act is action.bet or act is action.call:
+            self.opp_action_history[stage.value - 1].append(act.value-1)
+            self.opp_prev_action = act.value - 1
+        elif act is None: #If he receives none then he plays first
+            self.dealer = False
+            self.opp_prev_action = 0
+
+class Teacher(Agent_Bucket):
+
+    def __init__(self, name, chips, student):
+        Agent_Bucket.__init__(self, name, chips)
+        self.action_history = [[], [], [], []]
+        self.bucket_history = []
+        self.wins = 0
+        self.student = student
+        self.chips_before_round = 0
+        self.dealer = False
+        self.comp = HandComparator()
+
+    def get_stage(self):
+        if len(self.community_cards) == 0:
+            return Stage.preflop
+        elif len(self.community_cards) == 3:
+            return Stage.flop
+        elif len(self.community_cards) == 4:
+            return Stage.turn
+        else:
+            return Stage.river
+
+    def play(self, can_check=False, can_raise=True, pot=None):
+        act = Agent_Bucket.play(self, can_check, can_raise)
+        stage = self.get_stage()
+        bucket = LearningAgent.learning_bucket(self.cards, self.community_cards, stage)
+
+        if stage.value != len(self.bucket_history):
+            self.bucket_history.append(bucket)
+
+        self.action_history[stage.value - 1].append(act.value - 1)
+        return act
+
+
+    def end_round(self):
+        diff = self.chips - self.chips_before_round #pos if won negative if lost
+        stage = self.get_stage()
+        if self.student.folded and stage is not Stage.preflop:
+            student_hand = self.comp.get_hand(self.student.cards + self.community_cards)
+            hand = self.comp.get_hand(self.cards + self.community_cards)
+
+            winner = self.comp.compare_hands(student_hand, hand)
+
+            if winner is student_hand: #bad fold
+                self.student.learn(self.student.action_history, self.student.opp_action_history
+                                   , self.student.bucket_history, -1,self.student.dealer, fold=True)
+                print "Bad fold"
+            elif winner is hand:
+                self.student.learn(self.student.action_history, self.student.opp_action_history
+                                   , self.student.bucket_history, 1, self.student.dealer, fold=True)
+                print "Nice fold"
+
+        elif diff > 0:
+            self.student.learn(self.action_history, self.student.action_history, self.bucket_history, diff, self.dealer)
+
+    def new_hand(self):
+        player.new_hand(self)
+        self.wins = 0
+        self.action_history = [[], [], [], []]
+        self.bucket_history = []
+        self.chips_before_round = self.chips
+        self.dealer = not self.dealer
+
+    def win_money(self, amount):
+        player.win_money(self, amount)
+        self.wins = amount
+
+    def opponent_action(self, act):
+        if act is None:  # If he receives none then he plays first
+            self.dealer = False
+
+
+
 
 
 

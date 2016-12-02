@@ -2,7 +2,7 @@ import Bucketing
 import sys, os
 from Game import Game
 from player import player
-from LearningAgent import LearningAgent
+from LearningAgent import LearningAgent, Teacher
 from All_In_Agent import All_In_Agent
 from random_agent import random_agent
 from Agent_Bucket import Agent_Bucket
@@ -15,8 +15,8 @@ weight = 0
 
 for i in range(0,1):
 
-    player1 = Agent_Bucket("bucket", 1000)
-    player2 = Utility_Agent("utility", 1000,weight)
+    player1 = Teacher("Learning", 1000)
+    player2 = Agent_Bucket("Bucket", 1000)
 
     game = Game(player1, player2, 10, 20)
     res = game.start_game()

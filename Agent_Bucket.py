@@ -3,8 +3,8 @@ from player import player,action
 from Bucketing import Bucketing
 
 class Agent_Bucket(player):
-	def __init__(self,name,chips):
-		player.__init__(self,name,chips)
+	def __init__(self, name, chips):
+		player.__init__(self, name, chips)
 		self.classifier = Bucketing()
 	
 	def play(self,can_check = False,can_raise = True, pot=None):
