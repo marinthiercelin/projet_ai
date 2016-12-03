@@ -6,12 +6,13 @@ from random_agent import random_agent
 from Agent_Bucket import Agent_Bucket
 from All_In_Agent import All_In_Agent
 from LearningAgent import LearningAgent
+from New_Agent import Utility_Agent
 
 
-player2 = bayesian_trainer("sparring_partner", 100)
+player2 = All_In_Agent("sparring_partner", 100)
 player1 = bayesian("Bot_to_train", 100,player2)
 
-for x in xrange(50):
+for x in xrange(10):
 	player1.new_game(100)
 	player2.new_game(100)
 	game = Game(player1, player2, 5, 10 )
