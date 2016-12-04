@@ -70,7 +70,10 @@ class player(object):
 
 	def opponent_action(self, act):
 		return None
-			
+
+	def opponent_cards(self, cards):
+		return None
+
 	def play(self, can_check = False,can_raise=True, pot=None):
 		print "Player : " + self.name
 		print "Your statement is " , self.chips

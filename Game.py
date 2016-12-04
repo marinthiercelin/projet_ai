@@ -89,8 +89,9 @@ class Game(object):
 
         small_blind_raise = 0
         dealer_raise = 0
+        self.small_blind.opponent_action(None)
         action1 = self.small_blind.play(can_check=not self.stage is Stage.preflop, pot=self.pot)  # small blind plays
-        self.dealer.opponent_action(action1)
+
 
         if action1 is action.fold:  # Small blind folded, end of round
             print self.small_blind.name + " folds\n"
@@ -118,10 +119,10 @@ class Game(object):
         else:
             print "Error : " + str(action1)
 
-
+        self.dealer.opponent_action(action1)
         action2 = self.dealer.play(can_check=action1 is action.call, pot=self.pot)  # then dealer plays, he can raise if small blind didnt raise ! correction : can raise anyway
         self.small_blind.opponent_action(action2)
-        
+
         if action2 is action.fold:  # dealer folded
             print self.dealer.name + " folds\n"
             self.dealer.folded = True
@@ -148,9 +149,10 @@ class Game(object):
                 self.dealer.place_bet(small_blind_raise)  # Call
                 dealer_raise = self.dealer.place_bet(self.bet_value, self.small_blind.chips)  # raise
 
+
             action3 = self.small_blind.play(can_check=False,
                                             can_raise=False, pot=self.pot)  # if dealer raised, small blind either calls or fold
-	    self.dealer.opponent_action(action3)
+	    #self.dealer.opponent_action(action3)
             if action3 == action.fold:
                 print self.small_blind.name + " folds\n"
                 self.small_blind.folded = True
@@ -208,11 +210,13 @@ class Game(object):
         if self.small_blind.folded:
             print self.dealer.name, " won ", self.pot, " chips \n"
             self.dealer.win_money(self.pot)
+            self.small_blind.opponent_cards(self.dealer.show_cards())
             winner_name = self.dealer.name
 
         elif self.dealer.folded:
             print self.small_blind.name + " won ", self.pot, " chips \n"
             self.small_blind.win_money(self.pot)
+            self.dealer.opponent_cards(self.small_blind.show_cards())
             winner_name = self.small_blind.name
 
         else:

@@ -219,7 +219,6 @@ class HandComparator(object):
     #Returns (True, straight) if the current hand contains a straight up to the given rank
     #card_ranks is reverse sorted (High to low)
     def is_straight(self, cards):
-        #print cards
         if len(cards) < 5:
             return False, None
 
@@ -247,18 +246,62 @@ class HandComparator(object):
             else:
                 return False, None
 
+    #Returns true if the cards are missing 1 card to get a flush
+    def flush_draw(self, cards):
+        flush_cards = []
+        for suit in deck_suits:
+            tmp = [card for card in cards if card[1] == suit]
+            if len(tmp) == 4:
+                return True
+        return False
+
+    #cards is of length 5 (only for preflop stage) Returns 0 if None, 1 if missing center card, 2 if open ended straight
+    def straight_draw(self, cards):
+        ranks = dict(cards).keys()
+        consecutive_groups = []
+        if 1 in ranks:
+            ranks.append(14)
+
+        ordered_set_ranks = sorted(list(set(ranks)), reverse=True)
+
+        tmp = []
+        for rank in ordered_set_ranks:
+            if not tmp or rank == tmp[-1] - 1: #Card comes right after
+                tmp.append(rank)
+            else:
+                consecutive_groups.append(tmp)
+                tmp = [rank]
+        if tmp:
+            consecutive_groups.append(tmp)
+
+        if len(consecutive_groups) == 2:
+            if consecutive_groups[0][-1] == consecutive_groups[1][0] + 2 : #Missing one card in between
+                return 1
+            elif len(consecutive_groups[0]) == 4 or len(consecutive_groups[1]) == 4:
+                return 2
+            else:
+                return 0
+        else:
+            for i in xrange(0, len(consecutive_groups) - 1):
+                if consecutive_groups[i][-1] == consecutive_groups[i+1][0] + 2 and len(consecutive_groups[i] + consecutive_groups[i+1]) == 4:
+                    return 1
+                elif len(consecutive_groups[i]) == 4 or len(consecutive_groups[i+1]) == 4:
+                    return 2
+            return 0
 
 '''d = HandComparator()
 deck = Deck.Deck()
 
-cards2 = [(9,"Diamonds"), (9, "Spades")]
+cards2 = [(9,"Diamonds"), (10, "Spades")]
 cards = [(11,"Spades"), (3,"Hearts")]
-comm = [(13,"Hearts"), (13,"Diamonds"), (6,"Clubs"), (10,"Hearts"), (10, "Spades")]
-h1 = d.get_hand(cards + comm)
-h2 = d.get_hand(cards2 + comm)
+
+comm = [(8,"Diamonds"), (7,"Diamonds"), (1,"Diamonds")]
+h1 = d.straight_draw(cards2 + comm)
+
+#h2 = d.get_hand(cards2 + comm)
 print h1
-print h2
-print d.compare_hands(h1,h2)
+#print h2
+#print d.compare_hands(h1,h2)
 
 for i in range(0,10):
     e = deck.get(7)
