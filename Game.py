@@ -210,11 +210,13 @@ class Game(object):
         if self.small_blind.folded:
             print self.dealer.name, " won ", self.pot, " chips \n"
             self.dealer.win_money(self.pot)
+            self.small_blind.opponent_cards(self.dealer.show_cards())
             winner_name = self.dealer.name
 
         elif self.dealer.folded:
             print self.small_blind.name + " won ", self.pot, " chips \n"
             self.small_blind.win_money(self.pot)
+            self.dealer.opponent_cards(self.small_blind.show_cards())
             winner_name = self.small_blind.name
 
         else:
