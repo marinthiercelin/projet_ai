@@ -30,7 +30,7 @@ chips = 100
 bet_value = 10
 blind_value = 5
 number_of_games = 20
-file_name = "test4.txt"
+file_name = "bayesian_test4.txt"
 player1 = LearningAgent("Learning",chips)
 player2 = Agent_Bucket("Bucket",chips)	
 compare_agents(player1,player2,number_of_games,chips,blind_value,bet_value,file_name)
