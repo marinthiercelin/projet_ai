@@ -8,7 +8,7 @@ from random_agent import random_agent
 from Agent_Bucket import Agent_Bucket
 from New_Agent import Utility_Agent
 
-training_episodes = 100
+training_episodes = 2000
 games_to_play = 10
 
 
@@ -16,20 +16,20 @@ sys.stdout = open(os.devnull, "w") #No prints
 
 for i in range(0, training_episodes + 1): #1000 learning episodes
 
-    if i % 5 == 0:
+    if i % 20 == 0:
         sys.stdout = sys.__stdout__
         print i
         sys.stdout = open(os.devnull, "w")
 
-    if i % 10 == 0: #Every 50 episodes, play 10 games against bucket agent to track progress
+    if i % 50 == 0: #Every 50 episodes, play 10 games against bucket agent to track progress
         apprentice = 0
         hands_played = 0
         hands_won = 0
         draws = 0
         bad_folds = 0
         for j in range(10):
-            player = LearningAgent("Student", 100)
-            opponent = Agent_Bucket("Bucket_Agent", 100)
+            player = LearningAgent("Student1", 100,2)
+            opponent = LearningAgent("Student2", 100,1)
             game = Game(player, opponent, 5, 10)
             results = game.start_game()
 
@@ -56,13 +56,12 @@ for i in range(0, training_episodes + 1): #1000 learning episodes
         sys.stdout = open(os.devnull, "w")
 
     if i != training_episodes:
-        student = LearningAgent("Student", 100, learning=True)
-        teacher = Teacher("Bucket", 100, student)
+        student = LearningAgent("Student1", 100,2)
+        teacher = LearningAgent("Student2", 100,1)
         game = Game(teacher, student, 5, 10)
         game.start_game()
 
 
 sys.stdout = sys.__stdout__
 
-student = LearningAgent("Student", 100)
 

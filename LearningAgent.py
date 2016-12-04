@@ -13,22 +13,39 @@ preflop_filename = "preflop2.json"
 flop_filename = "flop2.json"
 turn_filename = "turn2.json"
 river_filename = "river2.json"
+
+preflop_filename1 = "preflop.json"
+flop_filename1 = "flop.json"
+turn_filename1 = "turn.json"
+river_filename1 = "river.json"
+
+
 class LearningAgent(Agent_Bucket):
 
     #Plays only small blind for now
-    def __init__(self, name, starting_chips, learning=False):
+    def __init__(self, name, starting_chips, num):
+        if num == 1:
+            self.preflop = preflop_filename1
+            self.flop = flop_filename1
+            self.turn = turn_filename1
+            self.river= river_filename1
+        elif num == 2:
+            self.preflop = preflop_filename
+            self.flop = flop_filename
+            self.turn = turn_filename
+            self.river = river_filename
         Agent_Bucket.__init__(self, name, starting_chips)
         try:
-            with open(preflop_filename) as d:
+            with open(self.preflop) as d:
                 self.preflop_values = json.load(d)
                 d.close()
-            with open(flop_filename) as d:
+            with open(self.flop) as d:
                 self.flop_values = json.load(d)
                 d.close()
-            with open(turn_filename) as d:
+            with open(self.turn) as d:
                 self.turn_values = json.load(d)
                 d.close()
-            with open(river_filename) as d:
+            with open(self.river) as d:
                 self.river_values = json.load(d)
                 d.close()
             #raise IOError
@@ -42,7 +59,6 @@ class LearningAgent(Agent_Bucket):
             self.river_values = dict()
             self.initialize_map(self.river_values, Stage.turn)
 
-        self.learning = learning
         self.bucket_history = []
         self.action_history = [[],[],[],[]] #one for each stage
         self.opp_prev_action = None
@@ -250,16 +266,16 @@ class LearningAgent(Agent_Bucket):
             return action.fold
 
     def end_game(self):
-        with open(preflop_filename,'w') as d:
+        with open(self.preflop,'w') as d:
             json.dump(self.preflop_values, d)
             d.close()
-        with open(flop_filename,'w') as d:
+        with open(self.flop,'w') as d:
             json.dump(self.flop_values, d)
             d.close()
-        with open(turn_filename,'w') as d:
+        with open(self.turn,'w') as d:
             json.dump(self.turn_values,d)
             d.close()
-        with open(river_filename,'w') as d:
+        with open(self.river,'w') as d:
             json.dump(self.river_values,d)
             d.close()
 
