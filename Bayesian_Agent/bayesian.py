@@ -7,19 +7,25 @@ from player import player,action
 from Agent_Bucket import Agent_Bucket
 from numpy import random
 #try to infer the strategy
+
 class bayesian(Agent_Bucket):
-	def __init__(self,name,chips,opponent):
+	def __init__(self,name,chips,model = None):
 		Agent_Bucket.__init__(self,name,chips)
-		self.opp = opponent
+		self.opp = None
 		self.list_opp_action = []
 		self.dist = []
 		self.learning_model = True
-		self.model = []
+		if model is None:
+			self.model = []
+			self.learning_model = True
+		else :
+			self.model = model
+			self.learning_model = False
 		for i in xrange(5):
 			teta = [[5,5], [5,5]]
 			self.dist.append(list(teta))
-	
-		
+	def get_opponent(self,opponent):
+		self.opp = opponent
 	def new_hand(self):
 		player.new_hand(self)
         
@@ -86,7 +92,7 @@ class bayesian(Agent_Bucket):
 			guess = self.bucket_estimation(self.list_opp_action)
 			his_bucket = guess[0]
 			evidence = guess[1]
-			self.choose_action(my_bucket, his_bucket, evidence, can_check, can_raise)
+			return self.choose_action(my_bucket, his_bucket, evidence, can_check, can_raise)
 				
 	def choose_action(self, my_bucket, his_bucket, evidence, can_check, can_raise):
 		proba = [1,1,1]
@@ -133,8 +139,10 @@ class bayesian(Agent_Bucket):
 		s = sum(proba)
 		if s != 0 :
 			proba = [a / (s*1.0) for a in proba]
-		act = random.choice([action.fold,action.call,action.bet],1,p=proba)
-		return act[0]
+		act = random.choice([action.fold,action.call,action.bet],p=proba)
+		if act is None:
+			raise ImportError
+		return act
 					
 	def bucket_estimation(self,list_action):
 		proba = [1,1,1,1,1]

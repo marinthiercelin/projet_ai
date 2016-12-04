@@ -14,10 +14,10 @@ from HandComparator import HandComparator
 
 Ne = -1
 optimistic_reward = 10
-preflop_filename = "preflop4.json"
-flop_filename = "flop4.json"
-turn_filename = "turn4.json"
-river_filename = "river4.json"
+preflop_filename = "./Learning_Agent/preflop3.json"
+flop_filename = "./Learning_Agent/flop3.json"
+turn_filename = "./Learning_Agent/turn3.json"
+river_filename = "./Learning_Agent/river3.json"
 
 preflop_filename1 = "preflop.json"
 flop_filename1 = "flop.json"

@@ -8,8 +8,8 @@ from Information_Tree import Information_Tree
 from Game import Game
 from Bucketing import Bucketing
 
-dealtreefile = "deal.json"
-sbtreefile = "sb.json"
+dealtreefile = "./Regret_Agent/deal.json"
+sbtreefile = "./Regret_Agent/sb.json"
 
 class Regret_Agent(player):	
 	def __init__(self, name, chips, bv):

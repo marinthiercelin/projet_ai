@@ -124,3 +124,6 @@ class player(object):
 				string += str(card[0])
 			string += " of " + card[1] + " |"
 		return "No cards" if string == "" else string
+	
+	def get_opponent(self,opponent):
+		None

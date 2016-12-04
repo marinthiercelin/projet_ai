@@ -98,7 +98,7 @@ class Game(object):
         dealer_raise = 0
         self.small_blind.opponent_action(None)
         action1 = self.small_blind.play(can_check=not self.stage is Stage.preflop, pot=self.pot)  # small blind plays
-		
+        print "action 1 " + str( action1 )
 
         if action1 is action.fold:  # Small blind folded, end of round
             print self.small_blind.name + " folds\n"
@@ -131,11 +131,12 @@ class Game(object):
 			print self.small_blind.name + " raises\n"
 			small_blind_raise = self.small_blind.place_bet(self.bet_value, self.dealer.chips)
         else:
-            print "Error : " + str(action1)
+            print "Error 2: " + str(action1)
 
         self.dealer.opponent_action(action1)
         action2 = self.dealer.play(can_check=action1 is action.call, pot=self.pot)  # then dealer plays, he can raise if small blind didnt raise ! correction : can raise anyway
         self.small_blind.opponent_action(action2)
+        print "action2 " + str(action2)
 
         if action2 is action.fold:  # dealer folded
             self.bethistory.append("F")
@@ -174,7 +175,7 @@ class Game(object):
 
 			action3 = self.small_blind.play(can_check=False,
                                             can_raise=False, pot=self.pot)  # if dealer raised, small blind either calls or fold
-	    #self.dealer.opponent_action(action3)
+			self.dealer.opponent_action(action3)
 			if action3 == action.fold:
 				self.bethistory.append("F")
 				self.dealer.betting_history(self.bethistory)
@@ -192,7 +193,7 @@ class Game(object):
 				print self.small_blind.name + " calls\n"
 				self.small_blind.place_bet(dealer_raise)
         else:
-            print "Error : " + str(action2)
+            print "Error 3 : " + str(action2)
 
         small_blind_bet = self.small_blind.collect_bet()
         dealer_bet = self.dealer.collect_bet()

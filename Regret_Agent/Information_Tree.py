@@ -3,6 +3,7 @@ sys.path.insert(0, '../Game')
 sys.path.insert(0, '../Naive_Agents')
 sys.path.insert(0, '../Learning_Agent')
 sys.path.insert(0, '../Bayesian_Agent')
+sys.path.insert(0, '../Regret_Agent')
 from Information_Set import Information_Set
 from numpy import random
 from player import player, action
