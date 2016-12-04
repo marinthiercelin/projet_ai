@@ -6,6 +6,8 @@ from Agent_Bucket import Agent_Bucket
 from All_In_Agent import All_In_Agent
 from Deck import Deck,FakeDeck
 from LearningAgent import LearningAgent
+from bayesian import bayesian
+from New_Agent import Utility_Agent
 
 def compare_agents(agent1,agent2,number_of_games,chips,blind,bet,file_name):
 	f = open(file_name, "a")
@@ -29,10 +31,20 @@ def compare_agents(agent1,agent2,number_of_games,chips,blind,bet,file_name):
 chips = 100
 bet_value = 10
 blind_value = 5
+learning_round = 10
 number_of_games = 20
-file_name = "bayesian_test4.txt"
-player1 = LearningAgent("Learning",chips)
-player2 = Agent_Bucket("Bucket",chips)	
+file_name = "bayesian_test3.txt"
+player1 = Utility_Agent("Utility",chips)
+player2 = bayesian("Bayesian",chips,player1)
+
+for x in xrange(learning_round):
+	player1.new_game(chips)
+	player2.new_game(chips)
+	game = Game(player1, player2, blind_value, bet_value)
+	game.start_game()
+	
+player2.learning(False)
+	
 compare_agents(player1,player2,number_of_games,chips,blind_value,bet_value,file_name)
 		
 	

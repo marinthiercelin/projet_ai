@@ -1,5 +1,6 @@
 from player import player,action
 from Agent_Bucket import Agent_Bucket
+from numpy import random
 #try to infer the strategy
 class bayesian(Agent_Bucket):
 	def __init__(self,name,chips,opponent):
@@ -31,7 +32,8 @@ class bayesian(Agent_Bucket):
 		self.opp_bucket = bucket
 		
 	def opponent_action(self,action):
-		self.list_opp_action.append(action)
+		if not action is None:
+			self.list_opp_action.append(action)
 	
 	def update_teta_dist(self,bucket,action_history):
 		number_of_raise = 0
@@ -42,8 +44,10 @@ class bayesian(Agent_Bucket):
 				number_of_raise += 1
 			elif act is action.call:
 				number_of_call += 1
-			else:
+			elif act is action.fold:
 				number_of_fold += 1
+			else:
+				None
 		
 		self.dist[bucket][0][0] += number_of_raise
 		self.dist[bucket][0][1] += number_of_call + number_of_fold
@@ -77,7 +81,7 @@ class bayesian(Agent_Bucket):
 			guess = self.bucket_estimation(self.list_opp_action)
 			his_bucket = guess[0]
 			evidence = guess[1]
-			print "\n Based on " + str(self.list_opp_action) + " we guess : " + str(bucket) +"\n"
+			print "\n Based on " + str(self.list_opp_action) + " we guess : " + str(his_bucket) +"\n"
 			self.choose_action(my_bucket, his_bucket, evidence, can_check, can_raise)
 				
 	def choose_action(self, my_bucket, his_bucket, evidence, can_check, can_raise):
@@ -127,21 +131,21 @@ class bayesian(Agent_Bucket):
 		if s != 0 :
 			proba = [a / (s*1.0) for a in proba]
 		act = random.choice([action.fold,action.call,action.bet],1,p=proba)
-		return act
+		return act[0]
 					
 	def bucket_estimation(self,list_action):
 		proba = [1,1,1,1,1]
 		for bucket in xrange(5):
-			for action in list_action:
-				if action is action.call:
+			print "list of action : " + str(list_action)
+			for act in list_action:
+				if act is action.call:
 					proba_act = self.model[bucket][1]
 					proba[bucket] *= proba_act
-				elif action is action.bet:
+				elif act is action.bet:
 					proba_act = self.model[bucket][2]
 					proba[bucket] *= proba_act
 				else:
-					print "error estimation bucket"
-					return 0 # fold ? not supposed to happen
+					None
 		max_prob = max(proba)
 		idx = proba.index(max_prob)
 		del proba[idx]

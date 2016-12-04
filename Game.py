@@ -91,7 +91,7 @@ class Game(object):
         dealer_raise = 0
         self.small_blind.opponent_action(None)
         action1 = self.small_blind.play(can_check=not self.stage is Stage.preflop, pot=self.pot)  # small blind plays
-
+		
 
         if action1 is action.fold:  # Small blind folded, end of round
             print self.small_blind.name + " folds\n"
@@ -99,7 +99,7 @@ class Game(object):
 
             small_blind_bet = self.small_blind.collect_bet()
             dealer_bet = self.dealer.collect_bet()
-	    self.pot += small_blind_bet + dealer_bet
+            self.pot += small_blind_bet + dealer_bet
             return False
 
         # We don't care if small blind calls or checks at this point, and if he raises, he adds it to his current bet
