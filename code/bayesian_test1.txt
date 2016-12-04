@@ -1,0 +1,60 @@
+Aller All in 4 Bayesian 5 draw 0 winner Bayesian
+Retour Bayesian 2 All in 0 draw 1 winner Bayesian
+-----------------
+Aller All in 3 Bayesian 3 draw 0 winner Bayesian
+Retour Bayesian 4 All in 2 draw 0 winner Bayesian
+-----------------
+Aller All in 3 Bayesian 3 draw 0 winner Bayesian
+Retour Bayesian 3 All in 2 draw 0 winner Bayesian
+-----------------
+Aller All in 16 Bayesian 6 draw 1 winner All in
+Retour Bayesian 6 All in 5 draw 1 winner Bayesian
+-----------------
+Aller All in 1 Bayesian 3 draw 1 winner Bayesian
+Retour Bayesian 4 All in 2 draw 0 winner Bayesian
+-----------------
+Aller All in 0 Bayesian 3 draw 0 winner Bayesian
+Retour Bayesian 2 All in 1 draw 1 winner Bayesian
+-----------------
+Aller All in 2 Bayesian 3 draw 0 winner Bayesian
+Retour Bayesian 5 All in 5 draw 0 winner Bayesian
+-----------------
+Aller All in 2 Bayesian 4 draw 0 winner Bayesian
+Retour Bayesian 4 All in 4 draw 0 winner Bayesian
+-----------------
+Aller All in 3 Bayesian 3 draw 0 winner Bayesian
+Retour Bayesian 3 All in 0 draw 0 winner Bayesian
+-----------------
+Aller All in 4 Bayesian 6 draw 1 winner Bayesian
+Retour Bayesian 5 All in 4 draw 0 winner Bayesian
+-----------------
+Aller All in 4 Bayesian 4 draw 0 winner Bayesian
+Retour Bayesian 0 All in 5 draw 0 winner All in
+-----------------
+Aller All in 2 Bayesian 4 draw 0 winner Bayesian
+Retour Bayesian 3 All in 10 draw 0 winner All in
+-----------------
+Aller All in 5 Bayesian 5 draw 1 winner Bayesian
+Retour Bayesian 3 All in 10 draw 1 winner All in
+-----------------
+Aller All in 0 Bayesian 3 draw 0 winner Bayesian
+Retour Bayesian 0 All in 5 draw 0 winner All in
+-----------------
+Aller All in 10 Bayesian 3 draw 0 winner All in
+Retour Bayesian 7 All in 10 draw 1 winner Bayesian
+-----------------
+Aller All in 6 Bayesian 5 draw 1 winner Bayesian
+Retour Bayesian 3 All in 2 draw 0 winner Bayesian
+-----------------
+Aller All in 3 Bayesian 5 draw 0 winner Bayesian
+Retour Bayesian 3 All in 2 draw 0 winner Bayesian
+-----------------
+Aller All in 17 Bayesian 8 draw 1 winner All in
+Retour Bayesian 4 All in 5 draw 0 winner Bayesian
+-----------------
+Aller All in 0 Bayesian 3 draw 0 winner Bayesian
+Retour Bayesian 4 All in 2 draw 0 winner Bayesian
+-----------------
+Aller All in 5 Bayesian 4 draw 0 winner Bayesian
+Retour Bayesian 5 All in 8 draw 1 winner Bayesian
+-----------------
