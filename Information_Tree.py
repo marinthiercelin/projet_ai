@@ -1,12 +1,16 @@
 from Information_Set import Information_Set
+from numpy import random
+from player import player, action
 import json
 
 
 class Information_Tree(object): 
-	def __init__(self, filepath): 
+	def __init__(self, filepath, bv, learn = False): 
 		self.info_sets = dict()		
+		self.betvalue = bv
+		self.filepath = filepath
 		self.load_tree(filepath)
-		if len(self.info_sets) == 0:
+		if len(self.info_sets) == 0 or learn == True:
 			self.first_tree()
 		
 	def get_action(self, can_check, can_raise, bucket, bethistory): 
@@ -16,8 +20,15 @@ class Information_Tree(object):
 		return act[0]
 
 	def get_probs(self, bucket, bethistory, can_check, can_raise):
-		prob = self.info_sets.get(self.hashed(bucket, bethistory), [0, 1, 0])
-		if can_check : 
+
+		iset = self.info_sets.get(self.hashed(bucket, self.listtostring(bethistory)), None)
+		if iset == None : 
+			prob = [0, 1, 0]
+		else : 
+			prob = iset.probs
+		if prob != [0, 1, 0]: 
+			print prob 
+		if can_check or bucket >= 3 : 
 			prob[0] = 0
 		if not can_raise: 
 			prob[2] = 0
@@ -26,7 +37,9 @@ class Information_Tree(object):
 		
 	def first_tree(self):
 		histories = self.generate_strings() 
-		self.treenit(histories)
+		self.treenit(histories, self.betvalue)
+		self.update_tree(1000)
+		self.save_tree()
 	
 	def update_tree(self, n): 
 		for i in xrange(n): 
@@ -34,14 +47,18 @@ class Information_Tree(object):
 			
 	def stepupdate(self): 
 		for iset in self.info_sets.values():
-			iset.update_expected_values()
+			histC = iset.history + "C"
+			histR = iset.history + "R"
+			nextC = self.info_sets.get(self.hashed(iset.player_bucket, histC), None) 
+			nextR = self.info_sets.get(self.hashed(iset.player_bucket, histR), None) 		
+			iset.update_expected_values(nextC, nextR)
 			n = len(iset.history)
 			oppart = (iset.history[:n-1], iset.history[n-1:])
 			if oppart[1] == "R": 
-				oprob = self.info_sets.get(self.hashed(iset.bucket, oppart[0]), [1/3.0, 1/3.0, 1/3.0])[2]
+				oprob = self.info_sets.get(self.hashed(iset.player_bucket, oppart[0]), [1/3.0, 1/3.0, 1/3.0]).probs[2]
 			else : 
-				oprob = self.info_sets.get(self.hashed(iset.bucket, oppart[0]), [1/3.0, 1/3.0, 1/3.0])[1]
-			iset.update_regrets(opbrob)
+				oprob = self.info_sets.get(self.hashed(iset.player_bucket, oppart[0]), [1/3.0, 1/3.0, 1/3.0]).probs[1]
+			iset.update_regrets(oprob)
 			iset.update_probs()
 	
 	def normalize(self, prob): 
@@ -52,10 +69,10 @@ class Information_Tree(object):
 			prob = [0, 1, 0]
 		return prob
 	
-	def treenit(self, hist): 
+	def treenit(self, hist, bv): 
 		for buck in xrange(5): 			
 			for elem in hist: 
-				infset = Information_Set()
+				infset = Information_Set(bv)
 				infset.player_bucket = buck
 				infset.history = elem
 				self.info_sets[self.hashed(buck, str(elem))] = infset
@@ -109,19 +126,44 @@ class Information_Tree(object):
 				newl.append(i)
 		return newl		
 	
-	
-	
-	def hashed(buck, beth):
-		if beth = None: 
+	def hashed(self, buck, beth):
+		if beth == None: 
 			return str(buck)
 		return str(buck) + str(beth)
 	
 	def load_tree(self, file1):
-		file d = open(file1)
-		self.info_sets = json.load(d)
+		d = open(file1)
+		self.jsontodict(json.load(d))
 		d.close()
 	
-	def save_tree(self, file1): 
-		file d = open(file1, 'w')
-		json.dump(self.info_sets, d)
+	def save_tree(self): 
+		d = open(self.filepath, 'w')
+		stored_dict = self.dicttojson()
+		json.dump(stored_dict, d)
 		d.close() 
+	
+	def dicttojson(self): 
+		stored_dict = {}
+		for elem in self.info_sets.items():
+			templist = []
+			bucklist = [0]
+			bucklist[0] = elem[1].player_bucket
+			templist.append(bucklist)
+			templist.append(list(elem[1].history))
+			templist.append(elem[1].regrets) 
+			templist.append(elem[1].probs)
+			templist.append(elem[1].expected_values)
+			stored_dict[elem[0]] = templist
+		return stored_dict
+	
+	def jsontodict(self, jsonlist): 
+		for elem in jsonlist.items(): 
+			iset = Information_Set()
+			iset.player_bucket = elem[1][0]
+			iset.history = elem[1][1]
+			iset.regrets = elem[1][2]
+			iset.probs = elem[1][3]
+			iset.expected_values = elem[1][4]
+			self.info_sets[elem[0]] = iset
+			
+

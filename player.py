@@ -73,6 +73,9 @@ class player(object):
 
 	def opponent_cards(self, cards):
 		return None
+	
+	def betting_history(self, bethistory): 
+		return None
 
 	def play(self, can_check = False,can_raise=True, pot=None):
 		print "Player : " + self.name
