@@ -81,13 +81,11 @@ class bayesian(Agent_Bucket):
 			guess = self.bucket_estimation(self.list_opp_action)
 			his_bucket = guess[0]
 			evidence = guess[1]
-			print "\n Based on " + str(self.list_opp_action) + " we guess : " + str(his_bucket) +"\n"
 			self.choose_action(my_bucket, his_bucket, evidence, can_check, can_raise)
 				
 	def choose_action(self, my_bucket, his_bucket, evidence, can_check, can_raise):
 		proba = [1,1,1]
 		if evidence < 1.5:
-			print " not enough info "
 			if my_bucket is 0:
 				proba = [0.5,0.45,0.05]
 			elif my_bucket is 1:
@@ -136,7 +134,6 @@ class bayesian(Agent_Bucket):
 	def bucket_estimation(self,list_action):
 		proba = [1,1,1,1,1]
 		for bucket in xrange(5):
-			print "list of action : " + str(list_action)
 			for act in list_action:
 				if act is action.call:
 					proba_act = self.model[bucket][1]
@@ -151,5 +148,4 @@ class bayesian(Agent_Bucket):
 		del proba[idx]
 		second = max(proba)
 		ev = max_prob/second if second != 0 else 10000
-		print "proba of all : " + str(proba)
 		return (idx, ev) 
