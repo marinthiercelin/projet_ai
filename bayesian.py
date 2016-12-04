@@ -7,6 +7,8 @@ class bayesian(Agent_Bucket):
 		self.opp = opponent
 		self.list_opp_action = []
 		self.dist = []
+		self.learning_model = True
+		self.model
 		for i in xrange(5):
 			teta = [[5,5], [5,5]]
 			self.dist.append(list(teta))
@@ -16,8 +18,9 @@ class bayesian(Agent_Bucket):
 		player.new_hand(self)
         
 	def end_round(self):
-		opp_cards = self.opp.cards
-		self.update_teta_dist(self.bucket(opp_cards),self.list_opp_action)
+		if self.learning_model:
+			opp_cards = self.opp.cards
+			self.update_teta_dist(self.bucket(opp_cards),self.list_opp_action)
 		self.list_opp_action = []
 
 	def bucket(self,cards):#technique of bucketing opponent_cards from 0 to 4
@@ -59,4 +62,13 @@ class bayesian(Agent_Bucket):
 			dist.append([(1-teta1)*(1-teta2),(1-teta1)*teta2,teta1])
 		return dist
 		
+	def learning(start_stop):
+		if start_stop is False :
+			self.model = list(self.teta_estimate)
+		self.learning_model = start_stop
 		
+	def play(self,can_check = False,can_raise = True, pot=None):
+		if self.learning_model:
+			return Agent_Bucket.play(self,can_check,can_raise,pot)
+		else:
+			#implement a counter_strategy
