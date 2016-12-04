@@ -21,28 +21,29 @@ class Game(object):
     # Init takes an array of players and the number of players set to 1
     # Blinds are the first chips to play the game
     def __init__(self, player1, player2, blind, bet_value, deck=None):
-	self.bet_value = bet_value
-        self.dealer = player1  # Second to play
-        self.small_blind = player2  # First to play
-        self.community_cards = []
-        if deck is None:
-            self.deck = Deck()
-        else:
-            self.deck = deck
-        self.blind = blind
-        self.pot = 0  # Sum of all bets for the game
-        self.stage = Stage.preflop
+		self.bet_value = bet_value
+		self.dealer = player1  # Second to play
+		self.small_blind = player2  # First to play
+		self.community_cards = []
+		if deck is None:
+			self.deck = Deck()
+		else:
+			self.deck = deck
+		self.blind = blind
+		self.pot = 0  # Sum of all bets for the game
+		self.stage = Stage.preflop
+		self.bethistory = []
 
-    # Instructs players to put blind bets in their current bet
+	# Instructs players to put blind bets in their current bet
     def collect_blinds(self):
-        self.small_blind.place_bet(self.blind / 2.0)
-        self.dealer.place_bet(self.blind)
+		self.small_blind.place_bet(self.blind / 2.0)
+		self.dealer.place_bet(self.blind)
 
     # Shuffles the deck and gives two cards to each player
     def deal(self):
-        self.deck.restart()
-        self.small_blind.collect_cards(self.deck.get(2))
-        self.dealer.collect_cards(self.deck.get(2))
+		self.deck.restart()
+		self.small_blind.collect_cards(self.deck.get(2))
+		self.dealer.collect_cards(self.deck.get(2))
 
     def start_game(self):
         name1 = self.dealer.name
@@ -53,6 +54,7 @@ class Game(object):
         while self.dealer.chips != 0 and self.small_blind.chips != 0:  # Play until no player has money
             print "########################################\n"
             print self.dealer.name + " is the dealer\n"
+            self.bethistory = []
             self.small_blind.new_hand()
             self.dealer.new_hand()
             print "Collecting blinds\n"
@@ -100,10 +102,12 @@ class Game(object):
             small_blind_bet = self.small_blind.collect_bet()
             dealer_bet = self.dealer.collect_bet()
             self.pot += small_blind_bet + dealer_bet
+            self.bethistory.append("F")
             return False
 
         # We don't care if small blind calls or checks at this point, and if he raises, he adds it to his current bet
         elif action1 is action.call:  # Makes the small blind cover the next half of blind
+            self.bethistory.append("C")
             if self.stage is Stage.preflop:
                 print "Completed small blind \n"
                 self.small_blind.place_bet(self.blind / 2.0)
@@ -111,11 +115,12 @@ class Game(object):
                 print self.small_blind.name + " checks\n"
 
         elif action1 is action.bet:
-            if self.stage is Stage.preflop:
-                self.small_blind.place_bet(self.blind / 2.0)
+			self.bethistory.append("R")
+			if self.stage is Stage.preflop:
+				self.small_blind.place_bet(self.blind / 2.0)
 
-            print self.small_blind.name + " raises\n"
-            small_blind_raise = self.small_blind.place_bet(self.bet_value, self.dealer.chips)
+			print self.small_blind.name + " raises\n"
+			small_blind_raise = self.small_blind.place_bet(self.bet_value, self.dealer.chips)
         else:
             print "Error : " + str(action1)
 
@@ -124,6 +129,7 @@ class Game(object):
         self.small_blind.opponent_action(action2)
 
         if action2 is action.fold:  # dealer folded
+            self.bethistory.append("F")
             print self.dealer.name + " folds\n"
             self.dealer.folded = True
 
@@ -133,36 +139,39 @@ class Game(object):
             return False
 
         elif action2 is action.call:
-            if action1 is action.call:
-                print self.dealer.name + " checks\n"
-            else:
-                print self.dealer.name + " calls\n"
-                self.dealer.place_bet(small_blind_raise)
+			self.bethistory.append("CZ")
+			if action1 is action.call:
+				print self.dealer.name + " checks\n"
+			else:
+				print self.dealer.name + " calls\n"
+				self.dealer.place_bet(small_blind_raise)
 
         # Here the dealer can re-raise, and thus we need the to pass the information to the small blind
         elif action2 == action.bet:
-            if action1 is action.call:
-                print self.dealer.name + " raises\n"
-                dealer_raise = self.dealer.place_bet(self.bet_value, self.small_blind.chips)
-            else:
-                print self.dealer.name + " calls and raises again\n"
-                self.dealer.place_bet(small_blind_raise)  # Call
-                dealer_raise = self.dealer.place_bet(self.bet_value, self.small_blind.chips)  # raise
+			self.bethistory.append("R")
+			if action1 is action.call:
+				print self.dealer.name + " raises\n"
+				dealer_raise = self.dealer.place_bet(self.bet_value, self.small_blind.chips)
+			else:
+				print self.dealer.name + " calls and raises again\n"
+				self.dealer.place_bet(small_blind_raise)  # Call
+				dealer_raise = self.dealer.place_bet(self.bet_value, self.small_blind.chips)  # raise
 
-
-            action3 = self.small_blind.play(can_check=False,
+			action3 = self.small_blind.play(can_check=False,
                                             can_raise=False, pot=self.pot)  # if dealer raised, small blind either calls or fold
 	    #self.dealer.opponent_action(action3)
-            if action3 == action.fold:
-                print self.small_blind.name + " folds\n"
-                self.small_blind.folded = True
-                small_blind_bet = self.small_blind.collect_bet()
-                dealer_bet = self.dealer.collect_bet()
-                self.pot += small_blind_bet + dealer_bet
-                return False
-            else:
-                print self.small_blind.name + " calls\n"
-                self.small_blind.place_bet(dealer_raise)
+			if action3 == action.fold:
+				self.bethistory.append("F")
+				print self.small_blind.name + " folds\n"
+				self.small_blind.folded = True
+				small_blind_bet = self.small_blind.collect_bet()
+				dealer_bet = self.dealer.collect_bet()
+				self.pot += small_blind_bet + dealer_bet
+				return False
+			else:
+				self.bethistory.append("C")
+				print self.small_blind.name + " calls\n"
+				self.small_blind.place_bet(dealer_raise)
         else:
             print "Error : " + str(action2)
 
