@@ -9,10 +9,10 @@ from HandComparator import HandComparator
 
 Ne = -1
 optimistic_reward = 10
-preflop_filename = "preflop2.json"
-flop_filename = "flop2.json"
-turn_filename = "turn2.json"
-river_filename = "river2.json"
+preflop_filename = "preflop4.json"
+flop_filename = "flop4.json"
+turn_filename = "turn4.json"
+river_filename = "river4.json"
 
 preflop_filename1 = "preflop.json"
 flop_filename1 = "flop.json"
@@ -162,6 +162,9 @@ class LearningAgent(Agent_Bucket):
     def update_list(self, location, opp_action, act, win):
         if opp_action == 0 and act == 0 and win < 0:
             location[opp_action][act] += win/2.0
+        elif opp_action == 1 and act == 0 and win < 0: #if a call is bad then a raise is also
+            location[opp_action][act] += win
+            location[opp_action][1] += win
         else:
             location[opp_action][act] += win
 

@@ -7,8 +7,8 @@ from All_In_Agent import All_In_Agent
 from random_agent import random_agent
 from Agent_Bucket import Agent_Bucket
 from New_Agent import Utility_Agent
-
-training_episodes = 2000
+from bayesian import bayesian
+training_episodes = 500
 games_to_play = 10
 
 
@@ -21,15 +21,15 @@ for i in range(0, training_episodes + 1): #1000 learning episodes
         print i
         sys.stdout = open(os.devnull, "w")
 
-    if i % 50 == 0: #Every 50 episodes, play 10 games against bucket agent to track progress
+    if i % 40 == 0: #Every 50 episodes, play 10 games against bucket agent to track progress
         apprentice = 0
         hands_played = 0
         hands_won = 0
         draws = 0
         bad_folds = 0
         for j in range(10):
-            player = LearningAgent("Student1", 100,2)
-            opponent = LearningAgent("Student2", 100,1)
+            player = LearningAgent("Student1", 100, 2)
+            opponent = Agent_Bucket("Student2", 100)
             game = Game(player, opponent, 5, 10)
             results = game.start_game()
 
@@ -56,8 +56,14 @@ for i in range(0, training_episodes + 1): #1000 learning episodes
         sys.stdout = open(os.devnull, "w")
 
     if i != training_episodes:
-        student = LearningAgent("Student1", 100,2)
-        teacher = LearningAgent("Student2", 100,1)
+        student = LearningAgent("Student1", 100, 2)
+        if i % 20 == 0:
+            teacher = All_In_Agent("Teacher", 100)
+        elif i % 10 == 0:
+            teacher = bayesian("Teacher", 100, student)
+        else:
+            teacher = Agent_Bucket("Teacher", 100)
+
         game = Game(teacher, student, 5, 10)
         game.start_game()
 
