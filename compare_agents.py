@@ -64,12 +64,11 @@ def competition(agent1,agent2,number_of_games,chips,blind,bet):
 chips = 100
 bet_value = 10
 blind_value = 5
-learning = True
+learning = False
 learning_round = 5
 number_of_games = 20
-player1 = LearningAgent("learning",chips,2)
-player2 = bayesian("bayesian",chips)
-player2.get_opponent(player1)
+player1 = Regret_Agent("regret",chips,bet_value)
+player2 = LearningAgent("learning",chips,2)
 
 if learning :
 	for x in xrange(learning_round):
