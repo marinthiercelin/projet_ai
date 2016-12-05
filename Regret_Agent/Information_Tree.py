@@ -34,8 +34,6 @@ class Information_Tree(object):
 			prob = [0, 1, 0]
 		else : 
 			prob = iset.probs
-		if prob != [0, 1, 0]: 
-			print prob 
 		if can_check or bucket >= 3 : 
 			prob[0] = 0
 		if not can_raise: 
