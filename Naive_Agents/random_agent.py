@@ -5,8 +5,9 @@ sys.path.insert(0, '../Learning_Agent')
 sys.path.insert(0, '../Bayesian_Agent')
 from player import player,action
 from random import randrange
-
 from numpy import random
+
+#an agent that plays randomly
 class random_agent(player):
 	def __init__(self,name,chips):
 		player.__init__(self,name,chips)

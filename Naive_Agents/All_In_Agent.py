@@ -5,6 +5,7 @@ sys.path.insert(0, '../Learning_Agent')
 sys.path.insert(0, '../Bayesian_Agent')
 from player import player,action
 
+#an agent that always bet, no matter what
 class All_In_Agent(player):	
 	def __init__(self, name, chips):
 		player.__init__(self, name, chips)
