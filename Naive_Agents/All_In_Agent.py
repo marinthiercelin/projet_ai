@@ -5,7 +5,7 @@ sys.path.insert(0, '../Learning_Agent')
 sys.path.insert(0, '../Bayesian_Agent')
 from player import player,action
 
-#an agent that always bet, no matter what
+# An agent that always bet when possible, calls otherwise. You can't play more aggressively. It is not as weak as it might appear to be and is a good benchmark agent. 
 class All_In_Agent(player):	
 	def __init__(self, name, chips):
 		player.__init__(self, name, chips)

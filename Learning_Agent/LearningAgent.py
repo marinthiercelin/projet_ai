@@ -157,8 +157,6 @@ class LearningAgent(Agent_Bucket):
                         opp_act = 0 #player is small blind to opponent doesnt play before it
                         act = acts[0]
 
-                        print acts, opp_acts
-
                 self.update_list(location, opp_act, act, math.fabs(amount)/amount )
                 if fold:
                     break

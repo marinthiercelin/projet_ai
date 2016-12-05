@@ -10,9 +10,10 @@ import math
 
 comp = HandComparator()
 
-#compute the bucket, for each hand
+# Computes the bucket, for each hand
 class Bucketing(object):
 
+	# Computes the expected value of a hand by comparing it to all the possible enemy hands and computing its win probability
 	def proba(self, cards, table_cards):
 		compteur = 0
 		diviseur = 0
@@ -35,6 +36,7 @@ class Bucketing(object):
 		proba = compteur / (diviseur*1.0)
 		return proba
 	
+	# Splits the probabilities computed by the above function in the 5 different buckets (0 - 0.2 : 0; 0.2 - 0.4 : 1 ... 0.8 - 1 : 4) 
 	def bucketing(self, cards, table_cards, number=5):
 		return int(math.floor(number*self.proba(cards,table_cards)))
 		

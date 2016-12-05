@@ -29,11 +29,6 @@ class Regret_Agent(player):
 			return self.dealer_tree.get_action(can_check, can_raise, bucket, self.bet_hist)
 		else: 
 			return self.sb_tree.get_action(can_check, can_raise, bucket, self.bet_hist)
-	
-	# At the end of the game, saves the state of the trees
-	def end_game(self): 
-		self.dealer_tree.save_tree()
-		self.sb_tree.save_tree()
 		
 	# Resets the betting history at the end of each hand and change the dealer
 	def new_hand(self): 

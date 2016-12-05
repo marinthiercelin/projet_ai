@@ -7,7 +7,7 @@ from player import player,action
 from random import randrange
 from numpy import random
 
-#an agent that plays randomly
+# An agent that chooses an action randomly
 class random_agent(player):
 	def __init__(self,name,chips):
 		player.__init__(self,name,chips)

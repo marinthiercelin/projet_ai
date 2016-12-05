@@ -18,8 +18,16 @@ class Information_Tree(object):
 		self.betvalue = bv
 		self.filepath = filepath
 		self.load_tree(filepath)
-		if len(self.info_sets) == 0 or learn == True:
+		
+		# If there was no precomputed tree generate a new one and save it in json format
+		if len(self.info_sets) == 0:
 			self.first_tree()
+			self.save_tree()
+		
+		# If we want to keep on towards the convergence of the algorithm, update the tree and save it.
+		elif learn: 
+			self.update_tree(1000)
+			self.save_tree()
 	
 	# Returns the action suggested by the strategy stocked in this tree
 	def get_action(self, can_check, can_raise, bucket, bethistory): 
@@ -46,7 +54,6 @@ class Information_Tree(object):
 		histories = self.generate_strings() 
 		self.treenit(histories, self.betvalue)
 		self.update_tree(1000)
-		self.save_tree()
 	
 	# Repeats n times the algorithm used by this technique
 	def update_tree(self, n): 
