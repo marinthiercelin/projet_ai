@@ -31,7 +31,9 @@ class Deck(object):
     def burn(self, number=1):
         for n in xrange(number):
             self.deck.pop()
-
+            
+            
+#fake deck of cards, to repeat experiments
 class FakeDeck(Deck):
 	def __init__(self):
 		self.list_of_decks = []

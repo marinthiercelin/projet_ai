@@ -7,6 +7,7 @@ from enum import Enum
 from copy import copy
 import HandComparator
 
+#The different actions a player can take
 class action(Enum):
 	call = 1
 	bet = 2
@@ -24,6 +25,7 @@ class player(object):
 		self.folded = False
 		self.community_cards = []
 		
+	#restart a new game
 	def new_game(self,chips):
 		self.chips = chips
 		self.cards = []
@@ -82,6 +84,7 @@ class player(object):
 	def betting_history(self, bethistory): 
 		return None
 
+	#ask the user to choose an action
 	def play(self, can_check = False,can_raise=True, pot=None):
 		print "Player : " + self.name
 		print "Your statement is " , self.chips

@@ -10,6 +10,7 @@ import math
 
 comp = HandComparator()
 
+#compute the bucket, for each hand
 class Bucketing(object):
 
 	def proba(self, cards, table_cards):

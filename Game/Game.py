@@ -3,14 +3,14 @@ sys.path.insert(0, '../Naive_Agents')
 sys.path.insert(0, '../Regret_Agent')
 sys.path.insert(0, '../Learning_Agent')
 sys.path.insert(0, '../Bayesian_Agent')
-# game class
+
 from Deck import Deck
 from enum import Enum
 import HandComparator
 from random import randrange
 from player import player, action
 
-
+#Different stages of the game of poker
 class Stage(Enum):
     preflop = 1
     flop = 2
@@ -21,7 +21,7 @@ class Stage(Enum):
 
 comparator = HandComparator.HandComparator()
 
-
+#the main class of the game
 class Game(object):
     # Init takes an array of players and the number of players set to 1
     # Blinds are the first chips to play the game
@@ -234,6 +234,7 @@ class Game(object):
         self.dealer.update_cards(self.community_cards)
         return False  # turn is not over
 
+    #Takes care of the routine at the endof the round
     def end_of_round(self):
         winner_name = ""
         if self.small_blind.folded:
